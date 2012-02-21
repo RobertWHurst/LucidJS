@@ -5,7 +5,7 @@ Decouple components, make them lucid.
 -------------------------------------
 
 LucidJS is a small library that allows you to make your own event emitters with ease.
-Its fully featured and works with AMD module loaders.
+Its fully featured and works with a plain old script tag, AMD module loaders, and nodeJS.
 
 Lucid is simple and easy to use. Its also remarkably useful and carries an 'ace' called
 pipe.
