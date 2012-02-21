@@ -181,6 +181,13 @@
 				try {
 					if(emitter.on) {
 						pipeBinding = emitter.on(event, handler);
+
+						//fix for jquery
+						if(emitter.jquery && emitter.off) {
+							pipeBinding.clear = function() {
+								emitter.off(event, handler);
+							};
+						}
 					}
 					if(emitter.addEventListener) {
 						emitter.addEventListener(event, handler, true);
