@@ -58,7 +58,7 @@ You can do crazy things like this:
 
 	//There that will teach you to copy and paste!
 
-As you can see LucidJS emitters are very fexable and will get right out of your way.
+As you can see LucidJS emitters are very fexable and will get right out of your way (unlike alert boxes...).
 
 The Ace
 -------
