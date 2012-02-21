@@ -6,7 +6,7 @@
  *
  * Copyright 2012, Robert William Hurst
  * Licenced under the BSD License.
- * See license.txt
+ * See https://raw.github.com/RobertWHurst/LucidJS/master/license.txt
  */
 (function(factory) {
 
