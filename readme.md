@@ -87,23 +87,56 @@ Cleaning up
 -----------
 
 	var emitter = LucidJS.emitter();
-    var otherEmitter = LucidJS.emitter();
+	var otherEmitter = LucidJS.emitter();
 
-    var pipe = emitter.pipe(otherEmitter);
+	var pipe = emitter.pipe(otherEmitter);
 
-    emitter.on('pipedEvent', function() {
-        alert('I will never be fired');
-    });
-    var bind = emitter.on('triggeredEvent', function() {
-        alert('I also will never be fired');
-    });
+	emitter.on('pipedEvent', function() {
+		alert('I will never be fired');
+	});
+	var bind = emitter.on('triggeredEvent', function() {
+		alert('I also will never be fired');
+	});
 
-    pipe.clear();
-    bind.clear();
+	pipe.clear();
+	bind.clear();
 
-    otherEmitter.trigger('pipedEvent');
-    emitter.trigger('triggeredEvent');
+	otherEmitter.trigger('pipedEvent');
+	emitter.trigger('triggeredEvent');
 
 All of this is great but eventully you may want to stop listening to an event, or stop piping events from another emitter
 This can be done very easily as you can see above.
 
+Whats the point?
+----------------
+
+	function Dog(name) {
+		var emitter = LucidJS.emitter();
+		
+		return {
+			"on": emitter.on,
+			"bark": bark,
+			"rollOver": rollOver,
+			"walk": walk
+		}
+		
+		function bark() {
+			var message = 'Woof! Woof!';
+			emitter.trigger(message);
+			alert(message);
+		}
+		function rollOver() {
+			var message = name + ' rolled over!';
+			emitter.trigger('rollOver', message);
+			alert(message);
+		}
+		function walk() {
+			var message = name + ' went for a walk';
+			emitter.trigger('walk', message);
+			alert(message);
+		}
+	}
+
+This example of a 'Dog' class shows one way to use LucidJS as a event emitter for your own objects. In this case the
+returned dog object has a `on` method to allow external code to listen for the dog's 'walk', 'rollOver', and 'bark'
+events.
