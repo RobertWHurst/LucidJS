@@ -79,7 +79,7 @@ The Ace
 	//even jQuery wrapped elements
 	emitter.pipe(jQueryElement);
 
-In the Intro I told you LucidJS carried and 'ace' called pipe. Above you can see what I mean. You can pipe events
+In the Intro I told you LucidJS carried and 'ace' called `pipe`. Above you can see what I mean. You can pipe events
 in from any other event emitter object supported. Currently `pipe` supports other LucidJS emitters, DOM objects
 (addEventListener or attachEvent), and even jQuery elements.
 
