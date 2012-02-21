@@ -1,5 +1,8 @@
 /*!
- * LucidJS - Because fuck the DOM
+ * LucidJS
+ *
+ * Lucid is an uber simple and easy to use event emitter library. Lucid allows you to
+ * create your own event system and even pipe in events from any number of DOM elements.
  *
  * Copyright 2012, Robert William Hurst
  * Licenced under the BSD License.
