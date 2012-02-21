@@ -7,8 +7,15 @@
  */
 (function(factory) {
 
+	//AMD
 	if(typeof define === 'function' && define.amd) {
 		define(factory);
+
+	//NODE
+	} else if(typeof document === 'undefined' && typeof module === 'object') {
+		module.exports = factory();
+
+	//DOM GLOBAL
 	} else {
 		window.LucidJS = factory();
 	}
