@@ -52,7 +52,7 @@ You can do crazy things like this:
 
 	emitter.trigger('message', function(message, times) {
 		for(var i = 0; i < times; i += 1) {
-			alert(message + ' ' + (i + 1) + '. );
+			alert(message + ' ' + (i + 1) + '.');
 		}
 	}, 'Hi there, this is message', 100);
 
