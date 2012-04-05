@@ -19,7 +19,7 @@ test('API', function() {
 });
 
 test('emitter.on() and emitter.trigger()', function() {
-	var emitter, test1, test2;
+	var emitter, test1, test2, test3;
 
 	emitter = LucidJS.emitter();
 
@@ -44,6 +44,14 @@ test('emitter.on() and emitter.trigger()', function() {
 	}).clear();
 
 	ok(test2 !== true, 'Calling the clear method returned by on should unbind the callback.');
+
+    emitter.on('testEvent3', function(arg){
+        test3 = arg;
+    });
+
+    emitter.trigger('testEvent3', 'foo');
+
+    ok(test3 == 'foo', 'arguments must be passed with trigger');
 
 });
 
