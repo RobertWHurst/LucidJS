@@ -116,7 +116,7 @@
 			if(typeof event !== 'string' && !Array.isArray(event)) { throw new Error('Cannot bind to event emitter. The passed event is not a string or an array.'); }
 
 			//get the arguments
-			args = Array.prototype.slice.apply(arguments).splice(1);
+			args = Array.prototype.slice.apply(arguments, 1);
 
 			//handle event arrays
 			if(Array.isArray(event)) {
