@@ -58,7 +58,7 @@ You can do crazy things like this:
 
 	//There that will teach you to copy and paste!
 
-As you can see LucidJS emitters are very fexable and will get right out of your way (unlike alert boxes...).
+As you can see LucidJS emitters are very flexible and will get right out of your way (unlike alert boxes...).
 
 The Ace
 -------
@@ -79,9 +79,41 @@ The Ace
 	//even jQuery wrapped elements
 	emitter.pipe(jQueryElement);
 
-In the Intro I told you LucidJS carried and 'ace' called `pipe`. Above you can see what I mean. You can pipe events
-in from any other event emitter object supported. Currently `pipe` supports other LucidJS emitters, DOM objects
-(addEventListener or attachEvent), and even jQuery elements.
+In the Intro I told you LucidJS carried and 'ace' called `pipe`. Above you can see what I mean. You can pipe events in from any other event emitter object supported. Currently `pipe` supports other LucidJS emitters, DOM objects (addEventListener or attachEvent), and even jQuery elements.
+
+Set an event in stone
+---------------------
+
+	var emitter = LucidJS.emitter();
+	
+	emitter.on('ready', function() {
+		//will fire
+	});
+	
+	emitter.set('ready');
+	
+	setTimeout(function() {
+		emitter.on('ready', function() {
+			//will fire instantly after 2000ms
+		});
+	}, 2000);
+	
+In some cases you only want to trigger an event once but you may want anything bound to the event later to be triggered automatically. This is what `emitter.set` does.
+
+Get all of the listeners
+------------------------
+
+	var emitter = LucidJS.emitter();
+	
+	emitter.on('cake', function() { alert('CAKE!!!'); });
+	
+	var cakeListeners = emitter.listeners('cake');
+	// cakeListeners >>> [ function() { alert('CAKE!!!'); } ]
+	
+	var allListeners = emitter.listeners();
+	// allListeners >>> {"cake": [ function() { alert('CAKE!!!'); } ] }
+	
+If you ever want to get all of the listeners on an event or event the hole emitter you can do so with `emitter.listeners()`. Editing the arrays returned will allow you to directly edit the emitter.
 
 Cleaning up
 -----------
@@ -104,8 +136,16 @@ Cleaning up
 	otherEmitter.trigger('pipedEvent');
 	emitter.trigger('triggeredEvent');
 
-All of this is great but eventully you may want to stop listening to an event, or stop piping events from another emitter
+All of this is great but eventually you may want to stop listening to an event, or stop piping events from another emitter
 This can be done very easily as you can see above.
+
+	//clears everything
+	emitter.listeners.clear();
+	
+	//clears just the listeners on the 'cake' event
+	emitter.listeners.clear('cake');
+
+And you can also clear all listener callbacks on a single event	or the hole emitter in one clean swoop as above.
 
 Whats the point?
 ----------------
