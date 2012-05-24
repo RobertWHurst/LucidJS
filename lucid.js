@@ -87,14 +87,14 @@
 			}
 
 			//trigger set events next tick
-			for(event in setEvents) {
-				if(!setEvents.hasOwnProperty(event)) { continue; }
+			if(setEvents[event]) {
 
 				//execute each argument set
 				for(sEI = 0; sEI < setEvents[event].length; sEI += 1) {
 
 					//trigger the set event
 					trigger.apply(this, setEvents[event][sEI]);
+					clearListeners(event);
 				}
 			}
 
@@ -240,8 +240,9 @@
 			//validate
 			if(typeof event !== 'string') { throw new Error('Cannot set event. the event must be a string.')}
 
-			//trigger the event
+			//trigger the event and clear existing listeners
 			trigger.apply(this, arguments);
+			clearListeners(event);
 
 			api = {
 				"clear": clear
@@ -249,7 +250,7 @@
 
 			//trigger all future binds
 			if(!setEvents[event]) { setEvents[event] = []; }
-			setEvents[event].push(arguments);
+			setEvents[event].push(Array.prototype.slice.apply(arguments));
 
 			return api;
 
