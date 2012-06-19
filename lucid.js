@@ -98,6 +98,9 @@
 				}
 			}
 
+			//trigger the handler event
+			trigger('handler', event, callback);
+
 			//return the api
 			return api;
 
@@ -160,7 +163,7 @@
 			var args, cI, eI, blockEventBubble;
 
 			//validate the event
-			if(typeof event !== 'string' && typeof event.push !== 'function') { throw new Error('Cannot trigger event. The passed event is not a string or an array.'); }
+			if(typeof event !== 'string' && typeof event !== "object" && typeof event.push !== 'function') { throw new Error('Cannot trigger event. The passed event is not a string or an array.'); }
 
 			//get the arguments
 			args = Array.prototype.slice.apply(arguments).splice(1);
