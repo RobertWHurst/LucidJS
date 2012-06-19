@@ -39,7 +39,7 @@
 	function EventEmitter(object) {
 		var api, callbacks, pipedEmitters, setEvents;
 
-		if(object && object === null || typeof object !== 'object') { throw new Error('Cannot oggment object with emitter. The object must be an object.'); }
+		if(object && (object === null || typeof object !== 'object')) { throw new Error('Cannot augment object with emitter. The object must be an object.'); }
 
 		//polyfills for ms's piece o' shit browsers
 		[].indexOf||(Array.prototype.indexOf=function(a,b,c){for(c=this.length,b=(c+~~b)%c;b<c&&(!(b in this)||this[b]!==a);b++);return b^c?b:-1;});

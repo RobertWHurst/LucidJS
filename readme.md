@@ -194,9 +194,23 @@ returned dog object contains the api for the dog instance. Its then passed to `L
 Creates an event emitter and returns it. If an object is passed in the object is augmented with emitter methods.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|object|Optional. Any object or array you wish to turn into an emitter.|object|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>object</td>
+			<td>Optional. Any object or array you wish to turn into an emitter.</td>
+			<td>object</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter{}
@@ -226,10 +240,28 @@ If the handler returns `false`, it will cause the source of the event; `emitter.
 `emitter.on` returns a `binding` object that can be used to modify the event binding.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|event|The name of the event that the handler will be bound to.|string|
-|handler|The function that will be executed whenever the event given is triggered.|function|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>The name of the event that the handler will be bound to.</td>
+			<td>string</td>
+		</tr>
+		<tr>
+			<td>handler</td>
+			<td>The function that will be executed whenever the event given is triggered.</td>
+			<td>function</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter.once()
@@ -243,10 +275,28 @@ If the handler returns `false`, it will cause the source of the event; `emitter.
 `emitter.once` returns a `binding` object that can be used to modify the event binding.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|event|The name of the event that the handler will be bound to.|string|
-|handler|The function that will be executed whenever the event given is triggered.|function|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>The name of the event that the handler will be bound to.</td>
+			<td>string</td>
+		</tr>
+		<tr>
+			<td>handler</td>
+			<td>The function that will be executed whenever the event given is triggered.</td>
+			<td>function</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter.trigger()
@@ -258,10 +308,28 @@ Triggers an event on the emitter. Any handlers bound with `emitter.on` or `emitt
 If any of the handlers returned `false	` then `emitter.trigger` will return false. Otherwise it will return true.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|event|The name of the event that will be triggered.|string|
-|...args|Any additional arguments that will be passed to the handers of the event.|*|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>The name of the event that will be triggered.</td>
+			<td>string</td>
+		</tr>
+		<tr>
+			<td>...args</td>
+			<td>Any additional arguments that will be passed to the handers of the event.</td>
+			<td>*</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter.set()
@@ -273,10 +341,28 @@ Triggers an event on the emitter. Useful for flagging, `emitter.set` acts like `
 If any of the handlers returned `false	` then `emitter.set` will return false. Otherwise it will return true.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|event|The name of the event that will be set.|string|
-|...args|Any additional arguments that will be passed to the handers of the event.|*|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>The name of the event that will be set.</td>
+			<td>string</td>
+		</tr>
+		<tr>
+			<td>...args</td>
+			<td>Any additional arguments that will be passed to the handers of the event.</td>
+			<td>*</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter.pipe()
@@ -288,9 +374,23 @@ Pipes all events from a source emitter into the emitter. Any events triggered or
 Returns a pipe object that can be used to modify the pipe.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|emitter|The emitter that events will be piped from.|object|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>emitter</td>
+			<td>The emitter that events will be piped from.</td>
+			<td>object</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter.listeners()
@@ -304,9 +404,23 @@ If an event name is given, the array of handlers bound to the named event will b
 Directly editting the handlers array is not recommended, however it may be nessisary to achieve curtain types of functionally in specific cases.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|event|Optional. The name of the event to expose. The handlers bound the the event will be returned.|string|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>Optional. The name of the event to expose. The handlers bound the the event will be returned.</td>
+			<td>string</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter.listeners.clear()
@@ -316,9 +430,23 @@ Directly editting the handlers array is not recommended, however it may be nessi
 Clears handlers bound to the emitter. If an event name is given, only handlers bound to that event will be cleared. If no event name is given all bound handlers will be cleared.
 
 #### Arguments
-|Name|Description|Allowed Types|
-|:-|:-|:-|
-|event|Optional. The name of the event to clear handlers from.|string|
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>Optional. The name of the event to clear handlers from.</td>
+			<td>string</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ##A Foot Note
