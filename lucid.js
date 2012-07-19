@@ -168,7 +168,7 @@
 			if(typeof event !== 'string' && typeof event !== "object" && typeof event.push !== 'function') { throw new Error('Cannot trigger event. The passed event is not a string or an array.'); }
 
 			//get the arguments
-			args = Array.prototype.slice.apply(arguments).splice(1);
+			args = Array.prototype.slice.apply(arguments).slice(1);
 
 			//handle event arrays
 			if(typeof event === 'object' && typeof event.push === 'function') {
@@ -275,8 +275,20 @@
 		function pipe(emitter) {
 			var pipe, pipeBindings, event, eI, pipedEmitter, pipedEvents;
 
+			console.log(typeof emitter.on);
+			console.log(typeof emitter.addEventListener);
+			console.log(typeof emitter.attachEvent);
+
 			//validate the element
-			if(!emitter || typeof emitter !== 'object' || typeof emitter.on !== 'function' && typeof emitter.addEventListener !== 'function' && typeof emitter.attachEvent !== 'function') {
+			if(
+				!emitter ||
+				typeof emitter !== 'object' ||
+				(
+					typeof emitter.on !== 'function' &&
+					typeof emitter.addEventListener !== 'function' &&
+					typeof emitter.attachEvent !== 'object'
+				)
+			) {
 				throw new Error('Cannot pipe events. A vaild DOM object must be provided.');
 			}
 
