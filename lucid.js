@@ -31,6 +31,9 @@
 		"emitter": EventEmitter
 	};
 
+	//polyfills for ms's piece o' shit browsers
+	[].indexOf||(Array.prototype.indexOf=function(a,b,c){for(c=this.length,b=(c+~~b)%c;b<c&&(!(b in this)||this[b]!==a);b++);return b^c?b:-1;});
+
 	return api;
 
 	/**
@@ -39,10 +42,7 @@
 	function EventEmitter(object) {
 		var api, callbacks, pipedEmitters, setEvents;
 
-		if(object && (object === null || typeof object !== 'object')) { throw new Error('Cannot augment object with emitter. The object must be an object.'); }
-
-		//polyfills for ms's piece o' shit browsers
-		[].indexOf||(Array.prototype.indexOf=function(a,b,c){for(c=this.length,b=(c+~~b)%c;b<c&&(!(b in this)||this[b]!==a);b++);return b^c?b:-1;});
+		if(object && (object === null || typeof object !== 'object')) { throw new Error('Cannot augmented object with emitter. The object must be an object.'); }
 
 		//vars
 		api = object || {};
@@ -168,7 +168,7 @@
 			if(typeof event !== 'string' && typeof event !== "object" && typeof event.push !== 'function') { throw new Error('Cannot trigger event. The passed event is not a string or an array.'); }
 
 			//get the arguments
-			args = Array.prototype.slice.apply(arguments).slice(1);
+			args = Array.prototype.slice.apply(arguments).splice(1);
 
 			//handle event arrays
 			if(typeof event === 'object' && typeof event.push === 'function') {
@@ -275,27 +275,15 @@
 		function pipe(emitter) {
 			var pipe, pipeBindings, event, eI, pipedEmitter, pipedEvents;
 
-			console.log(typeof emitter.on);
-			console.log(typeof emitter.addEventListener);
-			console.log(typeof emitter.attachEvent);
-
 			//validate the element
-			if(
-				!emitter ||
-				typeof emitter !== 'object' ||
-				(
-					typeof emitter.on !== 'function' &&
-					typeof emitter.addEventListener !== 'function' &&
-					typeof emitter.attachEvent !== 'object'
-				)
-			) {
+			if(!emitter || typeof emitter !== 'object' || typeof emitter.on !== 'function' && typeof emitter.addEventListener !== 'function' && typeof emitter.attachEvent !== 'function') {
 				throw new Error('Cannot pipe events. A vaild DOM object must be provided.');
 			}
 
 			pipeBindings = [];
 			pipedEvents = [];
 
-			//check to make sure were not pipeing the same emitter twice
+			//check to make sure were not piping the same emitter twice
 			for(eI = 0; eI < pipedEmitters.length; eI += 1) {
 				pipedEmitter = pipedEmitters[eI];
 
@@ -331,11 +319,17 @@
 			function addEventToPipe(event) {
 				var pipeBinding = {};
 
+				//prevent EMITTER events from being bound
+				if(event.slice(0, 8) === 'EMITTER.') { return; }
+
 				//check to make sure the event has not been added
 				if(pipedEvents.indexOf(event) >= 0) { return; }
 
 				try {
+
+					//Spring or jQuery
 					if(emitter.on) {
+
 						pipeBinding = emitter.on(event, handler);
 
 						//fix for jquery
@@ -344,18 +338,43 @@
 								emitter.off(event, handler);
 							};
 						}
-					} else if(emitter.addEventListener) {
-						emitter.addEventListener(event, domHandler, false);
 
-						pipeBinding.clear = function() {
-							emitter.removeEventListener(event, domHandler, false);
-						};
-					} else if(emitter.attachEvent){
-						emitter.attachEvent('on' + event, domHandler);
+						//DOM
+					} else if(emitter.addEventListener || emitter.attachEvent) {
 
-						pipeBinding.clear = function() {
-							emitter.detachEvent('on' + event, domHandler);
-						};
+						//check for an existing handlers array
+						if(!emitter.data) { emitter.data = {}; }
+						if(!emitter.data.eventHandlers) { emitter.data.eventHandlers = {}; }
+
+						//setup the dom handler
+						if(!emitter.data.eventHandlers[event]) {
+
+							//create a handler array
+							emitter.data.eventHandlers[event] = [domHandler];
+
+							//DOM W3C
+							if(emitter.addEventListener) {
+								emitter.addEventListener(event, executeDomHandlers, false);
+								pipeBinding.clear = function() {
+									emitter.removeEventListener(event, executeDomHandlers, false);
+									delete emitter.data.eventHandlers[event];
+								};
+							}
+
+							//DOM IE
+							else if(emitter.attachEvent){
+								emitter.attachEvent('on' + event, executeDomHandlers);
+								pipeBinding.clear = function() {
+									emitter.detachEvent('on' + event, executeDomHandlers);
+									delete emitter.data.eventHandlers[event];
+								};
+							}
+						}
+
+						//bind to the existing handler
+						else {
+							emitter.data.eventHandlers[event].push(domHandler);
+						}
 					}
 				} catch(e) {}
 
@@ -366,24 +385,38 @@
 				 * A universal handler to capture an event and relay it to the emitter
 				 */
 				function handler(    ) {
-					var args;
+					var args, emitterArgs, emitterBubble, bubble;
 
 					args = Array.prototype.slice.call(arguments);
-					args.unshift(event);
 
-					return trigger.apply(this, args);
+					emitterArgs = clone(args);
+
+					args.unshift(event);
+					emitterArgs.unshift('EMITTER.' + event);
+
+					bubble = trigger.apply(this, args);
+					emitterBubble = trigger.apply(this, emitterArgs);
+
+					return !(!bubble || !emitterBubble);
 				}
 
 				/**
 				 * A dom event handler to capture an event and relay it to the emitter
 				 */
 				function domHandler(eventObj    ) {
-					var args;
+					var args, domArgs, domBubble, bubble;
 
 					args = Array.prototype.slice.call(arguments);
-					args.unshift(event);
 
-					if(!trigger.apply(this, args)) {
+					domArgs = clone(args);
+
+					args.unshift(event);
+					domArgs.unshift('DOM.' + event);
+
+					bubble = trigger.apply(this, args);
+					domBubble = trigger.apply(this, domArgs);
+
+					if(!bubble || !domBubble) {
 
 						//modern browsers
 						eventObj.stopPropagation && eventObj.stopPropagation();
@@ -392,6 +425,27 @@
 						//legacy browsers
 						typeof eventObj.cancelBubble !== 'undefined' && (eventObj.cancelBubble = true);
 						typeof eventObj.returnValue !== 'undefined' && (eventObj.returnValue = false);
+					}
+				}
+
+				/**
+				 * Executes all dom handlers attached to the current emitter under the current event
+				 */
+				function executeDomHandlers(eventObj) {
+					var hI;
+
+					//exit if there are no event handlers for the current event on the current emitter
+					if(
+						!emitter.data ||
+							!emitter.data.eventHandlers ||
+							!emitter.data.eventHandlers[event] ||
+							emitter.data.eventHandlers[event].length < 1
+						) {
+						return;
+					}
+
+					for(hI = 0; hI < emitter.data.eventHandlers[event].length; hI += 1) {
+						emitter.data.eventHandlers[event][hI](eventObj);
 					}
 				}
 			}
