@@ -117,9 +117,3 @@ test('emitter.listeners', function() {
 	equal(typeof emitter.listeners, 'function', 'emitter.listeners should be a function.');
 	equal(typeof emitter.listeners.clear, 'function', 'emitter.listeners.clear should be a function.');
 });
-
-test('emitter.clear', function() {
-	var emitter = LucidJS.emitter();
-
-	equal(typeof emitter.clear, 'function', 'emitter.clear should be a function.');
-});
