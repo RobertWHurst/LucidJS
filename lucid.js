@@ -31,13 +31,13 @@
 		"emitter": EventEmitter
 	};
 
-	//polyfills for ms's piece o' shit browsers
+	//indexOf pollyfill
 	[].indexOf||(Array.prototype.indexOf=function(a,b,c){for(c=this.length,b=(c+~~b)%c;b<c&&(!(b in this)||this[b]!==a);b++);return b^c?b:-1;});
 
 	return api;
 
 	/**
-	 * Creates a event emitter
+	 * Creates a event emitter.
 	 */
 	function EventEmitter(object) {
 		var emitter = object || {}, listeners = {}, setEvents = {}, pipes = {};
@@ -59,7 +59,7 @@
 		return emitter;
 
 		/**
-		 * Binds a function
+		 * Binds listeners to events.
 		 * @param event
 		 * @return {Object}
 		 */
@@ -101,9 +101,6 @@
 
 			return binding;
 
-			/**
-			 * Clears the binding
-			 */
 			function clear() {
 				for(aI = 0; aI < args.length; aI += 1) {
 					listeners[event].splice(listeners[event].indexOf(args[aI]), 1);
@@ -111,12 +108,6 @@
 				if(listeners[event].length < 1) { delete listeners[event]; }
 			}
 
-			/**
-			 * Binds a batch of events as one
-			 * @param events
-			 * @param args
-			 * @return {Object}
-			 */
 			function batchOn(events, args) {
 				var eI, binding = {}, bindings = [];
 				for(eI = 0; eI < events.length; eI += 1) {
@@ -138,6 +129,11 @@
 			}
 		}
 
+		/**
+		 * Binds listeners to events. Once an event is fired the binding is cleared automatically.
+		 * @param event
+		 * @return {Object}
+		 */
 		function once(event     ) {
 			var binding, args = Array.prototype.slice.apply(arguments, [1]), result = true;
 
@@ -155,6 +151,11 @@
 			return binding;
 		}
 
+		/**
+		 * Triggers events. Passes listeners any additional arguments.
+		 * @param event
+		 * @return {Boolean}
+		 */
 		function trigger(event     ) {
 			var args = Array.prototype.slice.apply(arguments, [1]), lI, eventListeners, result = true;
 
@@ -187,6 +188,11 @@
 			}
 		}
 
+		/**
+		 * Sets events. Passes listeners any additional arguments.
+		 * @param event
+		 * @return {*}
+		 */
 		function set(event     ) {
 			var args = Array.prototype.slice.apply(arguments), setEvent = {};
 
@@ -223,6 +229,10 @@
 			}
 		}
 
+		/**
+		 * Clears a set event, or all set events.
+		 * @param event
+		 */
 		function clearSet(event) {
 			if(event) {
 				delete setEvents[event];
@@ -231,6 +241,11 @@
 			}
 		}
 
+		/**
+		 * Pipes events from another emitter.
+		 * @param event
+		 * @return {Object}
+		 */
 		function pipe(event     ) {
 			var args = Array.prototype.slice.apply(arguments);
 
@@ -274,6 +289,10 @@
 
 		}
 
+		/**
+		 * Clears pipes based on the events they transport.
+		 * @param event
+		 */
 		function clearPipes(event) {
 			if(event) {
 				delete pipes[event];
@@ -282,6 +301,11 @@
 			}
 		}
 
+		/**
+		 * Gets listeners for events.
+		 * @param event
+		 * @return {*}
+		 */
 		function getListeners(event) {
 			if(event) {
 				return listeners[event];
@@ -290,6 +314,10 @@
 			}
 		}
 
+		/**
+		 * Clears listeners by events.
+		 * @param event
+		 */
 		function clearListeners(event) {
 			if(event) {
 				delete listeners[event];
@@ -298,6 +326,9 @@
 			}
 		}
 
+		/**
+		 * Clears the emitter
+		 */
 		function clear() {
 
 			trigger('emitter.clear');
@@ -312,9 +343,12 @@
 			delete emitter.set;
 			delete emitter.pipe;
 			delete emitter.listeners;
-			delete emitter.clear;
 		}
 
+		/**
+		 * Binds the emitter's event system to the DOM event system
+		 * @param node
+		 */
 		function handleNode(node) {
 			var handledEvents = [], handlerBinding, DOMEventListeners = [];
 
@@ -346,10 +380,13 @@
 					console.error(e);
 				}
 
-				function nodeListener(    ) {
+				function nodeListener(eventObj    ) {
 					var args = Array.prototype.slice.apply(arguments);
 					args.unshift([event, 'dom.' + event]);
-					trigger.apply(this, args);
+					if(trigger.apply(this, args) === false) {
+						eventObj.preventDefault();
+						eventObj.stopPropagation();
+					}
 				}
 			});
 
