@@ -2,186 +2,9 @@
 
 ##Decouple components, make them lucid.
 
-LucidJS is a small library that allows you to make your own event emitters with ease.
-Its fully featured and works with a plain old script tag, AMD module loaders, and nodeJS.
+LucidJS is a library that allows you to make your own event emitters with ease.
+Its fully featured and works with plain old script tags, AMD module loaders, or even as a nodeJS module.
 
-LucidJS is simple and easy to use. Its also remarkably useful and carries an 'ace' called
-`pipe`.
-
-
-##Hello World
-
-	var emitter = LucidJS.emitter();
-
-	emitter.on('helloWorld', function() {
-		alert('Hello World!');
-	}
-
-	emitter.trigger('helloWorld');
-
-In this simple example we create an emitter with `LucidJS.emitter` then bind to an event
-called `'helloWorld'`. Our event handler fires and alert with the string `'Hello World!'`.
-
-This is uber simple and doesn't show off all of the fexablity of LucidJS. Its just ment to
-showcase the simplicity.
-
-
-##Message Passing
-
-	var emitter = LucidJS.emitter();
-
-	emitter.on('message', function(message) {
-		alert(message);
-	}
-
-	emitter.trigger('message', 'Hi there, this is a message.');
-
-In this example you can see that `trigger` accepts both the event type and a message. Actually
-Trigger will take anything and any number of arguments after the event name and pass them to the
-bound handlers.
-
-You can do crazy things like this:
-
-	var emitter = LucidJS.emitter();
-
-	emitter.on('message', function(hander, message, times) {
-		hander(message, times);
-	}
-
-	emitter.trigger('message', function(message, times) {
-		for(var i = 0; i < times; i += 1) {
-			alert(message + ' ' + (i + 1) + '.');
-		}
-	}, 'Hi there, this is message', 100);
-
-	//There that will teach you to copy and paste!
-
-As you can see LucidJS emitters are very flexible and will get right out of your way (unlike alert boxes...).
-
-
-##The Ace
-
-	var emitter = LucidJS.emitter();
-
-	var otherEmitter = LucidJS.emitter();
-	var domNode = document.createElement('div');
-	var jQueryElement = $('<div></div>');
-
-	emitter.pipe(otherEmitter);
-	emitter.pipe(domNode);
-
-	emitter.on('click', function() {
-		alert("a 'click' event from 'otherEmitter', 'domNode', 'jQueryElement' can trigger this message.");
-	});
-
-	//even jQuery wrapped elements
-	emitter.pipe(jQueryElement);
-
-In the Intro I told you LucidJS carried and 'ace' called `pipe`. Above you can see what I mean. You can pipe events in from any other event emitter object supported. Currently `pipe` supports other LucidJS emitters, DOM objects (addEventListener or attachEvent), and even jQuery elements.
-
-
-##Set an event in stone
-
-	var emitter = LucidJS.emitter();
-	
-	emitter.on('ready', function() {
-		//will fire
-	});
-	
-	emitter.set('ready');
-	
-	setTimeout(function() {
-		emitter.on('ready', function() {
-			//will fire instantly after 2000ms
-		});
-	}, 2000);
-	
-In some cases you only want to trigger an event once but you may want anything bound to the event later to be triggered automatically. This is what `emitter.set` does.
-
-
-##Get all of the listeners
-
-	var emitter = LucidJS.emitter();
-	
-	emitter.on('cake', function() { alert('CAKE!!!'); });
-	
-	var cakeListeners = emitter.listeners('cake');
-	// cakeListeners >>> [ function() { alert('CAKE!!!'); } ]
-	
-	var allListeners = emitter.listeners();
-	// allListeners >>> {"cake": [ function() { alert('CAKE!!!'); } ] }
-	
-If you ever want to get all of the listeners on an event or event the hole emitter you can do so with `emitter.listeners()`. Editing the arrays returned will allow you to directly edit the emitter.
-
-
-##Cleaning up
-
-	var emitter = LucidJS.emitter();
-	var otherEmitter = LucidJS.emitter();
-
-	var pipe = emitter.pipe(otherEmitter);
-
-	emitter.on('pipedEvent', function() {
-		alert('I will never be fired');
-	});
-	var bind = emitter.on('triggeredEvent', function() {
-		alert('I also will never be fired');
-	});
-
-	pipe.clear();
-	bind.clear();
-
-	otherEmitter.trigger('pipedEvent');
-	emitter.trigger('triggeredEvent');
-
-All of this is great but eventually you may want to stop listening to an event, or stop piping events from another emitter
-This can be done very easily as you can see above.
-
-	//clears everything
-	emitter.listeners.clear();
-	
-	//clears just the listeners on the 'cake' event
-	emitter.listeners.clear('cake');
-
-And you can also clear all listener callbacks on a single event or the hole emitter in one clean swoop as above.
-
-
-##Whats the point?
-
-	function Dog(name) {
-		var dog;
-		
-		//create the dog api
-		 dog = {
-			"bark": bark,
-			"rollOver": rollOver,
-			"walk": walk
-		};
-		
-		//attach the emitter
-		LucidJS.emitter(dog);
-		
-		return dog;
-		
-		function bark() {
-			var message = 'Woof! Woof!';
-			emitter.trigger(message);
-			alert(message);
-		}
-		function rollOver() {
-			var message = name + ' rolled over!';
-			emitter.trigger('rollOver', message);
-			alert(message);
-		}
-		function walk() {
-			var message = name + ' went for a walk';
-			emitter.trigger('walk', message);
-			alert(message);
-		}
-	}
-
-This example of a 'Dog' class shows one way to use LucidJS as a event emitter for your own objects. In this case the
-returned dog object contains the api for the dog instance. Its then passed to `LucidJS.emitter()` and turned into an emitter  allowing external code to listen for the dog's 'walk', 'rollOver', and 'bark' events.
 
 
 ##Method documentation
@@ -190,8 +13,9 @@ returned dog object contains the api for the dog instance. Its then passed to `L
 ### LucidJS.emitter()
 
 	LucidJS.emitter([object object]) => object emitter
+	LucidJS.emitter([object node]) => object emitter
 	
-Creates an event emitter and returns it. If an object is passed in the object is augmented with emitter methods.
+Creates an event emitter and returns it. If an object is passed in the object is augmented with emitter methods. If a DOM node is passed in it will also be augmented, however any DOM events emitted by the node will also be emitted by the emitter.
 
 #### Arguments
 
@@ -211,6 +35,22 @@ Creates an event emitter and returns it. If an object is passed in the object is
 		</tr>
 	</tbody>
 </table>
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>node</td>
+			<td>Optional. Any DOM node you wish to turn into an emitter.</td>
+			<td>object</td>
+		</tr>
+	</tbody>
+</table>
 
 
 ### emitter{}
@@ -220,7 +60,9 @@ Creates an event emitter and returns it. If an object is passed in the object is
 		"once": once()
 		"trigger": trigger()
 		"set": set()
-		"pipe": pipe()
+		"pipe": pipe() => {
+			"clear": clear()
+		}
 		"listeners": listeners() => {
 			"clear": clear()
 		}
@@ -231,11 +73,13 @@ The emitter object is produced `LucidJS.emitter`. Any objects passed into `Lucid
 
 ### emitter.on()
 
-	emitter.on(string event, function handler) => object binding
+	emitter.on(string event, function listener[, ...]) => object binding
+	emitter.on(array events, function listener[, ...]) => object binding
 	
-Binds a handler to an event. Whenever the given event is triggered or set on emitter, the handler will be executed. Any additional arguments passed to `trigger()` will be passed into the handler on execution.
+Binds any number of listener callbacks to an event or an array of events. Whenever the given event or events are triggered or set on emitter, the listener callbacks will be executed. Any arguments passed to `trigger()` after the event will be passed into the listener callbacks on execution.
 
-If the handler returns `false`, it will cause the source of the event; `emitter.trigger` or `emitter.set` to return false.
+If any of the listener callbacks return `false`, the `emitter.trigger` or `emitter.set` that fired the event will return false.
+If the event was from a DOM node and `false` is returned both `event.stopPropigation` and `event.preventDefault` will be called.
 
 `emitter.on` returns a `binding` object that can be used to modify the event binding.
 
@@ -252,12 +96,34 @@ If the handler returns `false`, it will cause the source of the event; `emitter.
 	<tbody>
 		<tr>
 			<td>event</td>
-			<td>The name of the event that the handler will be bound to.</td>
+			<td>The name of the event that the listener will be bound to.</td>
 			<td>string</td>
 		</tr>
 		<tr>
-			<td>handler</td>
-			<td>The function that will be executed whenever the event given is triggered.</td>
+			<td>listener</td>
+			<td>A callback function that will be executed whenever the event given is triggered.</td>
+			<td>function</td>
+		</tr>
+	</tbody>
+</table>
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>events</td>
+			<td>An array of event names the listener will be bound to.</td>
+			<td>array</td>
+		</tr>
+		<tr>
+			<td>listener</td>
+			<td>A callback function that will be executed whenever the event given is triggered.</td>
 			<td>function</td>
 		</tr>
 	</tbody>
@@ -266,11 +132,9 @@ If the handler returns `false`, it will cause the source of the event; `emitter.
 
 ### emitter.once()
 
-	emitter.once(string event, function handler) => object binding
+	emitter.once(string event, function listener[, …]) => object binding
 
-Binds a handler to an event. Acts exactly like `emitter.on` with the execption that once the given event is triggered the binding is automatically cleared. Because of this any handlers bound with `emitter.once` will once fire once.
-
-If the handler returns `false`, it will cause the source of the event; `emitter.trigger` or `emitter.set` to return false.
+Binds a listener to an event. Acts exactly like `emitter.on` with the exception that once the given event is triggered the binding is automatically cleared. Because of this any listeners bound with `emitter.once` will once fire once.
 
 `emitter.once` returns a `binding` object that can be used to modify the event binding.
 
@@ -287,12 +151,33 @@ If the handler returns `false`, it will cause the source of the event; `emitter.
 	<tbody>
 		<tr>
 			<td>event</td>
-			<td>The name of the event that the handler will be bound to.</td>
+			<td>The name of the event that the listener will be bound to.</td>
 			<td>string</td>
 		</tr>
 		<tr>
-			<td>handler</td>
-			<td>The function that will be executed whenever the event given is triggered.</td>
+			<td>listener</td>
+			<td>A callback function that will be executed whenever the event given is triggered.</td>
+			<td>function</td>
+		</tr>
+	</tbody>
+</table>
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>events</td>
+			<td>An array of event names the listener will be bound to.</td>
+			<td>array</td>
+		</tr>
+		<tr>
+			<td>listener</td>
+			<td>A callback function that will be executed whenever the event given is triggered.</td>
 			<td>function</td>
 		</tr>
 	</tbody>
@@ -301,11 +186,12 @@ If the handler returns `false`, it will cause the source of the event; `emitter.
 
 ### emitter.trigger()
 
-	emitter.trigger(string event, * args...) => bool successful
+	emitter.trigger(string event, * arg[, ...]) => bool successful
+	emitter.trigger(array events, * arg[, ...]) => bool successful
 
-Triggers an event on the emitter. Any handlers bound with `emitter.on` or `emitter.once` will be executed. Any additional arguments passed into `emitter.trigger` excluding the first argument; the event, will be passed to any and all handlers bound to the emitter.
+Triggers an event or an array of events on the emitter. Any listeners bound with `emitter.on` or `emitter.once` will be executed. Any additional arguments passed into `emitter.trigger` excluding the first argument; the event, will be passed to any and all listeners bound to the emitter.
 
-If any of the handlers returned `false	` then `emitter.trigger` will return false. Otherwise it will return true.
+If any listeners triggered explicitly return `false` then `emitter.trigger` will return false as well.
 
 #### Arguments
 
@@ -324,8 +210,30 @@ If any of the handlers returned `false	` then `emitter.trigger` will return fals
 			<td>string</td>
 		</tr>
 		<tr>
-			<td>...args</td>
-			<td>Any additional arguments that will be passed to the handers of the event.</td>
+			<td>arg</td>
+			<td>Any argument to be passed into listeners of the event.</td>
+			<td>*</td>
+		</tr>
+	</tbody>
+</table>
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>events</td>
+			<td>An array of event names that will be triggered.</td>
+			<td>array</td>
+		</tr>
+		<tr>
+			<td>arg</td>
+			<td>Any argument to be passed into listeners of the event.</td>
 			<td>*</td>
 		</tr>
 	</tbody>
@@ -334,11 +242,10 @@ If any of the handlers returned `false	` then `emitter.trigger` will return fals
 
 ### emitter.set()
 
-	emitter.set(string event, * args...) => bool successful
+	emitter.set(string event, * arg[, ...]) => bool successful
+	emitter.set(array events, * arg[, ...]) => bool successful
 
-Triggers an event on the emitter. Useful for flagging, `emitter.set` acts like `emitter.trigger` but instead of just executing bound handlers, it executes both bound handlers and all future handlers. Adittionally, all handlers bound to a set event are cleared after they are executed to prevent them from executing again.
-
-If any of the handlers returned `false	` then `emitter.set` will return false. Otherwise it will return true.
+Works like trigger except that any listeners bound to the event or events after `emitter.set` is called will be fired as soon as they are bound. This is great of events that only happen once such as a `load` event. It prevents your listeners from missing an event because it has already fired prior to binding them.
 
 #### Arguments
 
@@ -357,8 +264,30 @@ If any of the handlers returned `false	` then `emitter.set` will return false. O
 			<td>string</td>
 		</tr>
 		<tr>
-			<td>...args</td>
-			<td>Any additional arguments that will be passed to the handers of the event.</td>
+			<td>arg</td>
+			<td>Any argument to be passed into listeners of the event.</td>
+			<td>*</td>
+		</tr>
+	</tbody>
+</table>
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>events</td>
+			<td>An array of event names that will be set.</td>
+			<td>array</td>
+		</tr>
+		<tr>
+			<td>arg</td>
+			<td>Any argument to be passed into listeners of the event.</td>
 			<td>*</td>
 		</tr>
 	</tbody>
@@ -367,11 +296,13 @@ If any of the handlers returned `false	` then `emitter.set` will return false. O
 
 ### emitter.pipe()
 
-	emitter.pipe(object emitter) => object pipe
+	emitter.pipe(object emitter[, ...]) => object pipe
+	emitter.pipe(string event, object emitter[, ...]) => object pipe
+	emitter.pipe(array events, object emitter[, ...]) => object pipe
 	
-Pipes all events from a source emitter into the emitter. Any events triggered or set on the source emitter will be triggered or set on the piping emitter aswell.
+Pipes all events or select events from one or more emitters, into another. Any events emitted by the piped emitters will also be emitted by the emitter pipe was called on. This is extremely powerful and allows you to chain your emitters.
 
-Returns a pipe object that can be used to modify the pipe.
+Returns a pipe object that can be used to clear the pipe.
 
 #### Arguments
 
@@ -392,16 +323,56 @@ Returns a pipe object that can be used to modify the pipe.
 	</tbody>
 </table>
 
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>The name of the event that will be piped.</td>
+			<td>string</td>
+		</tr>
+		<tr>
+			<td>emitter</td>
+			<td>The emitter that events will be piped from.</td>
+			<td>object</td>
+		</tr>
+	</tbody>
+</table>
 
-### emitter.listeners()
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>events</td>
+			<td>An array of event names that will be piped.</td>
+			<td>array</td>
+		</tr>
+		<tr>
+			<td>emitter</td>
+			<td>The emitter that events will be piped from.</td>
+			<td>object</td>
+		</tr>
+	</tbody>
+</table>
 
-	emitter.listeners([string event]) => object eventHandlers
+
+### emitter.pipe.clear()
+
+	emitter.pipe.clear([string event])
 	
-Allows access to the emitter's bound event handlers.
-
-If an event name is given, the array of handlers bound to the named event will be returned. If no event name is given then the events will be returned. The events object contains all event arrays.
-
-Directly editting the handlers array is not recommended, however it may be nessisary to achieve curtain types of functionally in specific cases.
+Allows clearing all pipes, or pipes that transport select events. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.
 
 #### Arguments
 
@@ -416,7 +387,37 @@ Directly editting the handlers array is not recommended, however it may be nessi
 	<tbody>
 		<tr>
 			<td>event</td>
-			<td>Optional. The name of the event to expose. The handlers bound the the event will be returned.</td>
+			<td>Optional. If any pipes are transporting this event they will be cleared.</td>
+			<td>string</td>
+		</tr>
+	</tbody>
+</table>
+
+
+### emitter.listeners()
+
+	emitter.listeners([string event]) => object eventlisteners
+	
+Allows access to the emitter's bound event listeners.
+
+If an event name is given, the array of listeners bound to the named event will be returned. If no event name is given then the events will be returned. The events object contains all event arrays.
+
+Directly editing the listeners array is not recommended, however it may be necessary to achieve certain types of functionally in specific cases.
+
+#### Arguments
+
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>Optional. The name of the event to expose. The listeners bound the the event will be returned.</td>
 			<td>string</td>
 		</tr>
 	</tbody>
@@ -427,7 +428,7 @@ Directly editting the handlers array is not recommended, however it may be nessi
 
 	emitter.listeners.clear([string event])
 	
-Clears handlers bound to the emitter. If an event name is given, only handlers bound to that event will be cleared. If no event name is given all bound handlers will be cleared.
+Clears listeners bound to the emitter. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.
 
 #### Arguments
 
@@ -442,7 +443,7 @@ Clears handlers bound to the emitter. If an event name is given, only handlers b
 	<tbody>
 		<tr>
 			<td>event</td>
-			<td>Optional. The name of the event to clear handlers from.</td>
+			<td>Optional. The name of the event to clear listeners from.</td>
 			<td>string</td>
 		</tr>
 	</tbody>
@@ -450,6 +451,7 @@ Clears handlers bound to the emitter. If an event name is given, only handlers b
 
 
 ##A Foot Note
+
 If you like my library feel free to use it however you want. If you wish to contribute to LucidJS please feel free to send me a pull request or make your own fork. Commentary is welcome on any of my projects.
 
 Cheers and happy coding.

@@ -2,97 +2,124 @@
 //event triggering pollyfill
 function trigger(eventName, element) {var a;if(document.createEvent){a=document.createEvent("HTMLEvents");a.initEvent(eventName,true,true);}else{a=document.createEventObject();a.eventType=eventName;}if(document.createEvent){element.dispatchEvent(a);}else{element.fireEvent(a.eventType,a);}}
 
-module('LucidJS');
+test('emitter', function() {
+	var emitter, element = document.createElement('div'), clicked = false;
 
-test('API', function() {
-	var emitter;
-
-	equal(typeof LucidJS, 'object', 'LucidJS should be an object.');
-	equal(typeof LucidJS.emitter, 'function', 'LucidJS.on should be a function.');
+	equal(typeof LucidJS.emitter, 'function', 'LucidJS.emitter should be a function.');
 
 	emitter = LucidJS.emitter();
+	equal(typeof emitter, 'object', 'LucidJS.emitter() should return an emitter object.');
+
+	emitter = LucidJS.emitter({"a": 1});
+	ok(emitter.a === 1, 'Passing an object into LucidJS.emitter(object) should return the same object augmented with the emitter methods.');
+
+	emitter = LucidJS.emitter(element);
+	emitter.on('mouseup', function(event) {
+		clicked = true;
+	});
+	trigger('mouseup', element);
+	ok(clicked, 'If emitter augments a node it should emit all the nodes DOM events.');
+});
+
+test('emitter.on', function() {
+	var emitter = LucidJS.emitter(), fired = false, args = [];
 
 	equal(typeof emitter.on, 'function', 'emitter.on should be a function.');
-	equal(typeof emitter.trigger, 'function', 'emitter.trigger should be a function.');
-	equal(typeof emitter.pipe, 'function', 'emitter.pipe should be a function.');
 
+	emitter.on('exec', function() { fired = true; }, function(    ){ args = Array.prototype.slice.apply(arguments) });
+	emitter.trigger('exec', 1, 2, 3);
+
+	ok(fired, 'emitter.on should fire its callback(s) when the event bound is fired.');
+	ok(args[0] === 1 && args[1] === 2 && args[2] === 3, 'Any arguments passed into trigger should be passed into the callback(s).');
 });
 
-test('emitter.on() and emitter.trigger()', function() {
-	var emitter, test1, test2, test3;
+test('emitter.once', function() {
+	var emitter = LucidJS.emitter(), fired;
 
-	emitter = LucidJS.emitter();
+	equal(typeof emitter.once, 'function', 'emitter.once should be a function.');
 
-	raises(function() {
-		emitter.on();
-	}, 'Executing on with no arguments should throw an error.');
+	emitter.once('exec', function() { fired = true; });
+	emitter.trigger('exec');
+	if(fired) { fired = 2; }
+	emitter.trigger('exec');
 
-	raises(function() {
-		emitter.trigger();
-	}, 'Executing trigger with no arguments should throw an error.');
+	ok(fired === 2, 'emitter.once should only fire once. It should delete itself after fired.');
+});
 
-	emitter.on('testEvent1', function() {
-		test1 = true;
+test('emitter.trigger', function() {
+	var emitter = LucidJS.emitter(), results = [];
+
+	equal(typeof emitter.trigger, 'function', 'emitter.trigger should be a function.');
+
+	emitter.on('red', function(red) {
+		results.push(red);
 	});
-
-	emitter.trigger('testEvent1');
-
-	ok(test1 === true, 'on method should catch triggered events.');
-
-	emitter.on('testEvent2', function() {
-		test2 = true;
+	emitter.on('blue', function(red, blue) {
+		results.push(blue);
+	});
+	emitter.on('green', function(red, blue, green) {
+		results.push(green);
+	});
+	emitter.on('green', function() {
+		results.pop();
 	}).clear();
 
-	ok(test2 !== true, 'Calling the clear method returned by on should unbind the callback.');
+	emitter.trigger(['red', 'blue', 'green'], 'red', 'blue', 'green');
 
-    emitter.on('testEvent3', function(arg){
-        test3 = arg;
-    });
+	equal(results.toString(), ['red', 'blue', 'green'].toString(), "When multiple events are triggered, they should be fired in the correct order.");
+});
 
-    emitter.trigger('testEvent3', 'foo');
+test('emitter.set', function() {
+	var emitter = LucidJS.emitter(), result = '';
 
-    ok(test3 == 'foo', 'arguments must be passed with trigger');
+	equal(typeof emitter.set, 'function', 'emitter.set should be a function.');
+	equal(typeof emitter.set.clear, 'function', 'emitter.set.clear should be a function.');
+
+	emitter.on('event', function() { result += 'Black'; });
+	emitter.set('event');
+	emitter.on('event', function() { result += 'White'; });
+
+	equal(result, 'BlackWhite', "When multiple events are triggered, they should be fired in the correct order.");
 
 });
 
-test('emitter.pipe()', function() {
-	var emitter1, emitter2, emitter3, DOMnode, test1, test2, test3;
+test('emitter.pipe', function() {
+	var emitterA = LucidJS.emitter(), emitterB = LucidJS.emitter(), emitterC = LucidJS.emitter(), results = [];
 
+	equal(typeof emitterA.pipe, 'function', 'emitter.pipe should be a function.');
+	equal(typeof emitterA.pipe.clear, 'function', 'emitter.pipe.clear should be a function.');
 
-	DOMnode = document.createElement('div');
+	emitterA.pipe(emitterB);
+	emitterA.pipe('event', emitterC);
 
-	raises(function() {
-		emitter1.pipe();
-	}, 'Executing pipe with no arguments should throw an error.');
-
-
-	emitter1 = LucidJS.emitter();
-	emitter2 = LucidJS.emitter();
-	emitter1.pipe(emitter2);
-	emitter1.on('testEvent1', function() {
-		test1 = true;
+	emitterA.on('one', function() {
+		results.push('one');
 	});
-	emitter2.trigger('testEvent1');
-
-	ok(test1 === true, 'Events triggered on emitter2 should be piped to emtter1.');
-
-
-	emitter1.on('testEvent2', function() {
-		test2 = true;
+	emitterA.on('two', function() {
+		results.push('two');
 	});
-	emitter1.pipe(DOMnode);
-	trigger('testEvent2', DOMnode);
-
-	ok(test2 === true, 'Events triggered on the DOM node should be piped to emtter1.');
-
-
-	emitter3 = LucidJS.emitter();
-	emitter1.on('testEvent3', function() {
-		test3 = true;
+	emitterA.on('three', function() {
+		results.push('three');
 	});
-	emitter1.pipe(emitter3).clear();
-	emitter3.trigger('testEvent3');
+	emitterA.on('event', function() {
+		results.push('event');
+	});
 
-	ok(test3 !== true, 'Calling the clear method returned by pipe should unbind the event pipe.');
+	emitterB.trigger(['one', 'two', 'three']);
+	emitterC.trigger(['event', 'one', 'two', 'three']);
 
+	equal(results.toString(), ['one', 'two', 'three', 'event'].toString(), "Pipe should echo the events emitted by any emitters passed into it.")
+});
+
+test('emitter.listeners', function() {
+	var emitter = LucidJS.emitter();
+
+	equal(typeof emitter.listeners, 'function', 'emitter.listeners should be a function.');
+	equal(typeof emitter.listeners.clear, 'function', 'emitter.listeners.clear should be a function.');
+});
+
+test('emitter.clear', function() {
+	var emitter = LucidJS.emitter();
+
+	equal(typeof emitter.clear, 'function', 'emitter.clear should be a function.');
 });

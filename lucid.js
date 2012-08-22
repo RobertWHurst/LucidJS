@@ -1,8 +1,8 @@
 /*!
  * LucidJS
  *
- * Lucid is an uber simple and easy to use event emitter library. Lucid allows you to
- * create your own event system and even pipe in events from any number of DOM elements.
+ * Lucid is an easy to use event emitter library. LucidJS allows you to create your own event system and even pipe in
+ * events from one emitter to another.
  *
  * Copyright 2012, Robert William Hurst
  * Licenced under the BSD License.
@@ -40,426 +40,343 @@
 	 * Creates a event emitter
 	 */
 	function EventEmitter(object) {
-		var api, callbacks, pipedEmitters, setEvents;
+		var emitter = object || {}, listeners = {}, setEvents = {}, pipes = {};
 
-		if(object && (object === null || typeof object !== 'object')) { throw new Error('Cannot augmented object with emitter. The object must be an object.'); }
+		emitter.on = on;
+		emitter.once = once;
+		emitter.trigger = trigger;
+		emitter.set = set;
+		emitter.set.clear = clearSet;
+		emitter.pipe = pipe;
+		emitter.pipe.clear = clearPipes;
+		emitter.listeners = getListeners;
+		emitter.listeners.clear = clearListeners;
 
-		//vars
-		api = object || {};
-		api.on = on;
-		api.once = once;
-		api.trigger = trigger;
-		api.set = set;
-		api.pipe = pipe;
-		api.listeners = getListeners;
-		api.listeners.clear = clearListeners;
+		if(emitter.addEventListener || emitter.attachEvent) {
+			handleNode(emitter);
+		}
 
-		callbacks = {};
-		pipedEmitters = [];
-		setEvents = [];
-
-		//return the api
-		return api;
+		return emitter;
 
 		/**
-		 * Binds functions to events
+		 * Binds a function
 		 * @param event
-		 * @param callback
+		 * @return {Object}
 		 */
-		function on(event, callback) {
-			var api, pEI, sEI;
+		function on(event     ) {
+			var args = Array.prototype.slice.apply(arguments, [1]), binding = {}, aI, sI;
 
-			if(typeof event !== 'string') { throw new Error('Cannot bind to event emitter. The passed event is not a string.'); }
-			if(typeof callback !== 'function') { throw new Error('Cannot bind to event emitter. The passed callback is not a function.'); }
-
-			//return the api
-			api = {
-				"clear": clear
-			};
-
-			//create the event namespace if it doesn't exist
-			if(!callbacks[event]) { callbacks[event] = []; }
-
-			//save the callback
-			callbacks[event].push(callback);
-
-			//bind to piped emitters
-			for(pEI = 0; pEI < pipedEmitters.length; pEI += 1) {
-				pipedEmitters[pEI].add(event);
-			}
-
-			//trigger set events next tick
-			if(setEvents[event]) {
-
-				//execute each argument set
-				for(sEI = 0; sEI < setEvents[event].length; sEI += 1) {
-
-					//trigger the set event
-					trigger.apply(this, setEvents[event][sEI]);
-					clearListeners(event);
-				}
-			}
+			//recurse over a batch of events
+			if(typeof event === 'object' && typeof event.push === 'function') { return batchOn(event, args); }
 
 			//trigger the handler event
-			trigger('handler', event, callback);
+			if(event.slice(0, 7) !== 'emitter') {
+				trigger('emitter.handler', event, args);
+			}
 
-			//return the api
-			return api;
+			//check for a set event
+			if(setEvents[event]) {
+				for(aI = 0; aI < args.length; aI += 1) {
+					if(typeof args[aI] !== 'function') { throw new Error('Cannot bind event. All callbacks must be functions.'); }
+					for(sI = 0; sI < setEvents[event].length; sI += 1) {
+						args[aI].apply(this, setEvents[event][sI]);
+					}
+				}
+
+				binding.clear = function() {};
+
+				return binding;
+			}
+
+			//create the event
+			if(!listeners[event]) { listeners[event] = []; }
+
+			//add each callback
+			for(aI = 0; aI < args.length; aI += 1) {
+				if(typeof args[aI] !== 'function') { throw new Error('Cannot bind event. All callbacks must be functions.'); }
+				listeners[event].push(args[aI]);
+			}
+
+			binding.clear = clear;
+
+			return binding;
 
 			/**
-			 * Unbinds the handler
+			 * Clears the binding
 			 */
 			function clear() {
-				var i;
-				if(callbacks[event]) {
-					i = callbacks[event].indexOf(callback);
-					callbacks[event].splice(i, 1);
-
-					if(callbacks[event].length < 1) {
-						delete callbacks[event];
-					}
-
-					return true;
+				for(aI = 0; aI < args.length; aI += 1) {
+					listeners[event].splice(listeners[event].indexOf(args[aI]), 1);
 				}
-				return false;
+				if(listeners[event].length < 1) { delete listeners[event]; }
 			}
-		}
 
-		/**
-		 * Binds a callback to an event. Will only execute once.
-		 * @param event
-		 * @param callback
-		 */
-		function once(event, callback) {
-			var handler, completed;
-
-			if(typeof event !== 'string') { throw new Error('Cannot bind to event emitter. The passed event is not a string.'); }
-			if(typeof callback !== 'function') { throw new Error('Cannot bind to event emitter. The passed callback is not a function.'); }
-
-			handler = on(event, function(    ) {
-
-				//if the handler has already fired then exit
-				if(!completed) {
-					//set completed
-					completed = true;
-
-					//fire the callback
-					callback.apply(this, arguments);
-
-					//clear the handler. Use setTimeout just in case the handler is called before the
-					// handler api is returned.
-					setTimeout(function() {
-						handler.clear();
-					}, 0);
-				}
-			});
-
-			return true;
-		}
-
-		/**
-		 * Triggers a given event and optionally passes its handlers all additional parameters
-		 * @param event
-		 */
-		function trigger(event    ) {
-			var args, cI, eI, blockEventBubble;
-
-			//validate the event
-			if(typeof event !== 'string' && typeof event !== "object" && typeof event.push !== 'function') { throw new Error('Cannot trigger event. The passed event is not a string or an array.'); }
-
-			//get the arguments
-			args = Array.prototype.slice.apply(arguments).splice(1);
-
-			//handle event arrays
-			if(typeof event === 'object' && typeof event.push === 'function') {
-
-				//for each event in the event array self invoke passing the arguments array
-				for(eI = 0; eI < event.length; eI += 1) {
-
-					//add the event name to the beginning of the arguments array
-					args.unshift(event[eI]);
-
-					//trigger the event
-					if(trigger.apply(this, args) === false) {
-						blockEventBubble = true;
-					}
-
-					//shift off the event name
+			/**
+			 * Binds a batch of events as one
+			 * @param events
+			 * @param args
+			 * @return {Object}
+			 */
+			function batchOn(events, args) {
+				var eI, binding = {}, bindings = [];
+				for(eI = 0; eI < events.length; eI += 1) {
+					args.unshift(events[eI]);
+					bindings.push(on.apply(this, args));
 					args.shift();
 				}
 
-				return !blockEventBubble;
+				binding.clear = clear;
+
+				return binding;
+
+				function clear() {
+					var bI;
+					for(bI = 0; bI < bindings.length; bI += 1) {
+						bindings[bI].clear();
+					}
+				}
+			}
+		}
+
+		function once(event     ) {
+			var binding, args = Array.prototype.slice.apply(arguments, [1]), result = true;
+
+			binding = on(event, function(    ) {
+				var aI, eventArgs = Array.prototype.slice.apply(arguments);
+				binding.clear();
+
+				for(aI = 0; aI < args.length; aI += 1) {
+					if(args[aI].apply(this, eventArgs) === false) {
+						result = true;
+					}
+				}
+			});
+
+			return binding;
+		}
+
+		function trigger(event     ) {
+			var args = Array.prototype.slice.apply(arguments, [1]), lI, eventListeners, result = true;
+
+			if(typeof event === 'object' && typeof event.push === 'function') { return batchTrigger(event, args); }
+
+			event = event.split('.');
+
+			while(event.length) {
+				eventListeners = listeners[event.join('.')];
+				if(eventListeners) {
+					for(lI = 0; lI < eventListeners.length; lI += 1) {
+						if(eventListeners[lI].apply(this, args) === false) {
+							result = false;
+						}
+					}
+				}
+				event.pop();
 			}
 
-			//if the event has callbacks then execute them
-			if(callbacks[event]) {
+			return result;
 
-				//fire the callbacks
-				for(cI = 0; callbacks[event] && cI < callbacks[event].length; cI += 1) {
-					if(callbacks[event][cI].apply(this, args) === false) {
-						blockEventBubble = true;
+			function batchTrigger(events, args) {
+				var eI, result = true;
+				for(eI = 0; eI < events.length; eI += 1) {
+					args.unshift(events[eI]);
+					if(trigger.apply(this, args) === false) { result = false; }
+					args.shift();
+				}
+				return result;
+			}
+		}
+
+		function set(event     ) {
+			var args = Array.prototype.slice.apply(arguments), setEvent = {};
+
+			if(typeof event === 'object' && typeof event.push === 'function') { return batchSet(event, args); }
+
+			//execute all of the existing binds for the event
+			trigger.apply(this, args);
+			clearListeners(event);
+
+			if(!setEvents[event]) { setEvents[event] = []; }
+			setEvents[event].push(args.slice(1));
+
+			setEvent.clear = clear;
+
+			return setEvent;
+
+			function batchSet(events, args) {
+				var eI, result = true;
+				for(eI = 0; eI < events.length; eI += 1) {
+					args.unshift(events[eI]);
+					if(trigger.apply(this, args) === false) { result = false; }
+					args.shift();
+				}
+				return result;
+			}
+
+			function clear() {
+				if(setEvents[event]) {
+					setEvents[event].splice(setEvents[event].indexOf(args), 1);
+					if(setEvents[event].length < 1) {
+						delete setEvents[event];
+					}
+				}
+			}
+		}
+
+		function clearSet(event) {
+			if(event) {
+				delete setEvents[event];
+			} else {
+				setEvents = {};
+			}
+		}
+
+		function pipe(event     ) {
+			var args = Array.prototype.slice.apply(arguments);
+
+			if(typeof event === 'object' && typeof event.on === 'function') { return pipeAll(args); }
+			if(typeof event !== 'string') { throw new Error('Cannot create pipe. The first argument must be an event string.'); }
+
+			return pipeEvent(event, args.slice(1));
+
+			function pipeEvent(event, args) {
+				var aI, pipeBindings = [], pipe = {};
+
+				if(event.slice(0, 7) === 'emitter') { throw new Error('Cannot pipe event "' + event + '". Events beginning with "emitter" cannot be piped.'); }
+
+				for(aI = 0; aI < args.length; aI += 1) {
+					pipeBindings.push(args[aI].on(event, function(    ) {
+						var args = Array.prototype.slice.apply(arguments);
+						args.unshift(event);
+						return trigger.apply(this, args);
+					}));
+				}
+
+				if(!pipes[event]) { pipes[event] = []; }
+				pipes[event].push(pipeBindings);
+
+				pipe.clear = clear;
+
+				return pipe;
+
+				function clear() {
+					if(pipes[event]) {
+						pipes[event].splice(pipes[event].indexOf(pipeBindings), 1);
 					}
 				}
 			}
 
-			return !blockEventBubble;
+			function pipeAll(args) {
+				return on('emitter.handler', function(event) {
+					pipeEvent(event, args);
+				});
+			}
+
 		}
 
-		/**
-		 * Gets event listeners
-		 * @param event
-		 */
+		function clearPipes(event) {
+			if(event) {
+				delete pipes[event];
+			} else {
+				pipes = {};
+			}
+		}
+
 		function getListeners(event) {
-			if(event && typeof event !== 'string') { throw new Error('Cannot retrieve listeners. If given the event must be a string.'); }
-
-			//return the listeners
 			if(event) {
-				return callbacks[event];
+				return listeners[event];
 			} else {
-				return callbacks;
+				return listeners;
 			}
 		}
 
-		/**
-		 * Clears the listeners
-		 * @param event
-		 */
 		function clearListeners(event) {
-			if(event && typeof event !== 'string') { throw new Error('Cannot clear listeners. If given the event must be a string.'); }
-
-			//return the listeners
 			if(event) {
-				callbacks[event] = [];
+				delete listeners[event];
 			} else {
-				callbacks = {};
+				listeners = {};
 			}
 		}
 
-		/**
-		 * Sets an event on the emitter
-		 * @param event
-		 */
-		function set(event    ) {
-			var api;
+		function clear() {
 
-			//validate
-			if(typeof event !== 'string') { throw new Error('Cannot set event. the event must be a string.')}
+			trigger('emitter.clear');
 
-			//trigger the event and clear existing listeners
-			trigger.apply(this, arguments);
-			clearListeners(event);
+			listeners = {};
+			setEvents = {};
+			pipes = {};
 
-			api = {
-				"clear": clear
-			};
-
-			//trigger all future binds
-			if(!setEvents[event]) { setEvents[event] = []; }
-			setEvents[event].push(Array.prototype.slice.apply(arguments));
-
-			return api;
-
-			/**
-			 * Clears the event
-			 */
-			function clear() {
-				setEvents[event].splice(setEvents[event].indexOf(arguments), 1);
-				if(setEvents[event].length < 1) { delete setEvents[event]; }
-			}
+			delete emitter.on;
+			delete emitter.once;
+			delete emitter.trigger;
+			delete emitter.set;
+			delete emitter.pipe;
+			delete emitter.listeners;
+			delete emitter.clear;
 		}
 
-		/**
-		 * Pipes in the events from another emitter including DOM objects
-		 * @param emitter
-		 */
-		function pipe(emitter) {
-			var pipe, pipeBindings, event, eI, pipedEmitter, pipedEvents;
+		function handleNode(node) {
+			var handledEvents = [], handlerBinding, DOMEventListeners = [];
 
-			//validate the element
-			if(!emitter || typeof emitter !== 'object' || typeof emitter.on !== 'function' && typeof emitter.addEventListener !== 'function' && typeof emitter.attachEvent !== 'function') {
-				throw new Error('Cannot pipe events. A vaild DOM object must be provided.');
-			}
-
-			pipeBindings = [];
-			pipedEvents = [];
-
-			//check to make sure were not piping the same emitter twice
-			for(eI = 0; eI < pipedEmitters.length; eI += 1) {
-				pipedEmitter = pipedEmitters[eI];
-
-				if(pipedEmitter.emitter === emitter) {
-					return true;
-				}
-			}
-
-			//create the pipe
-			pipe = {
-				"emitter": emitter,
-				"add": addEventToPipe
-			};
-
-			//add the emitter to the piped array
-			pipedEmitters.push(pipe);
-
-			//bind existing events
-			for(event in callbacks) {
-				if(!callbacks.hasOwnProperty(event)) { continue; }
-				addEventToPipe(event);
-			}
-
-			return {
-				"clear": clear
-			};
-
-			/**
-			 * Takes an event type and binds to that event (if possible) on the piped emitter
-			 * If the event fires it will be piped to this emitter.
-			 * @param event
-			 */
-			function addEventToPipe(event) {
-				var pipeBinding = {};
-
-				//prevent EMITTER events from being bound
-				if(event.slice(0, 8) === 'EMITTER.') { return; }
-
-				//check to make sure the event has not been added
-				if(pipedEvents.indexOf(event) >= 0) { return; }
+			handlerBinding = on('emitter.handler', function(event) {
+				if(handledEvents.indexOf(event) > -1) { return; }
+				handledEvents.push(event);
 
 				try {
 
-					//Spring or jQuery
-					if(emitter.on) {
+					//W3C
+					if(node.addEventListener) {
+						node.addEventListener(event, nodeListener, false);
+						DOMEventListeners.push({
+							"event": event,
+							"listener": nodeListener
+						});
+					}
 
-						pipeBinding = emitter.on(event, handler);
+					//MICROSOFT
+					else if(node.attachEvent) {
+						node.attachEvent('on' + event, nodeListener);
+						DOMEventListeners.push({
+							"event": event,
+							"listener": nodeListener
+						});
+					}
 
-						//fix for jquery
-						if(emitter.jquery && emitter.off) {
-							pipeBinding.clear = function() {
-								emitter.off(event, handler);
-							};
+				} catch(e) {
+					console.error(e);
+				}
+
+				function nodeListener(    ) {
+					var args = Array.prototype.slice.apply(arguments);
+					args.unshift([event, 'dom.' + event]);
+					trigger.apply(this, args);
+				}
+			});
+
+			emitter.clearNodeEmitter = clearNodeEmitter;
+
+			function clearNodeEmitter() {
+				var DI;
+				for(DI = 0; DI < DOMEventListeners.length; DI += 1) {
+					try {
+
+						//W3C
+						if(node.removeEventListener) {
+							node.removeEventListener(DOMEventListeners[DI].event, DOMEventListeners[DI].listener, false);
 						}
 
-						//DOM
-					} else if(emitter.addEventListener || emitter.attachEvent) {
-
-						//check for an existing handlers array
-						if(!emitter.data) { emitter.data = {}; }
-						if(!emitter.data.eventHandlers) { emitter.data.eventHandlers = {}; }
-
-						//setup the dom handler
-						if(!emitter.data.eventHandlers[event]) {
-
-							//create a handler array
-							emitter.data.eventHandlers[event] = [domHandler];
-
-							//DOM W3C
-							if(emitter.addEventListener) {
-								emitter.addEventListener(event, executeDomHandlers, false);
-								pipeBinding.clear = function() {
-									emitter.removeEventListener(event, executeDomHandlers, false);
-									delete emitter.data.eventHandlers[event];
-								};
-							}
-
-							//DOM IE
-							else if(emitter.attachEvent){
-								emitter.attachEvent('on' + event, executeDomHandlers);
-								pipeBinding.clear = function() {
-									emitter.detachEvent('on' + event, executeDomHandlers);
-									delete emitter.data.eventHandlers[event];
-								};
-							}
+						//MICROSOFT
+						else if(node.detachEvent) {
+							node.detachEvent('on' + DOMEventListeners[DI].event, DOMEventListeners[DI].listener);
 						}
 
-						//bind to the existing handler
-						else {
-							emitter.data.eventHandlers[event].push(domHandler);
-						}
-					}
-				} catch(e) {}
-
-				pipeBindings.push(pipeBinding);
-				pipedEvents.push(event);
-
-				/**
-				 * A universal handler to capture an event and relay it to the emitter
-				 */
-				function handler(    ) {
-					var args, emitterArgs, emitterBubble, bubble;
-
-					args = Array.prototype.slice.call(arguments);
-
-					emitterArgs = clone(args);
-
-					args.unshift(event);
-					emitterArgs.unshift('EMITTER.' + event);
-
-					bubble = trigger.apply(this, args);
-					emitterBubble = trigger.apply(this, emitterArgs);
-
-					return !(!bubble || !emitterBubble);
-				}
-
-				/**
-				 * A dom event handler to capture an event and relay it to the emitter
-				 */
-				function domHandler(eventObj    ) {
-					var args, domArgs, domBubble, bubble;
-
-					args = Array.prototype.slice.call(arguments);
-
-					domArgs = clone(args);
-
-					args.unshift(event);
-					domArgs.unshift('DOM.' + event);
-
-					bubble = trigger.apply(this, args);
-					domBubble = trigger.apply(this, domArgs);
-
-					if(!bubble || !domBubble) {
-
-						//modern browsers
-						eventObj.stopPropagation && eventObj.stopPropagation();
-						eventObj.preventDefault && eventObj.preventDefault();
-
-						//legacy browsers
-						typeof eventObj.cancelBubble !== 'undefined' && (eventObj.cancelBubble = true);
-						typeof eventObj.returnValue !== 'undefined' && (eventObj.returnValue = false);
+					} catch(e) {
+						console.error(e);
 					}
 				}
 
-				/**
-				 * Executes all dom handlers attached to the current emitter under the current event
-				 */
-				function executeDomHandlers(eventObj) {
-					var hI;
-
-					//exit if there are no event handlers for the current event on the current emitter
-					if(
-						!emitter.data ||
-							!emitter.data.eventHandlers ||
-							!emitter.data.eventHandlers[event] ||
-							emitter.data.eventHandlers[event].length < 1
-						) {
-						return;
-					}
-
-					for(hI = 0; hI < emitter.data.eventHandlers[event].length; hI += 1) {
-						emitter.data.eventHandlers[event][hI](eventObj);
-					}
-				}
-			}
-
-			/**
-			 * Clears the pipe so the emitter is no longer captured
-			 */
-			function clear() {
-				var pI;
-				pipedEmitters.splice(pipedEmitters.indexOf(emitter), 1);
-
-				for(pI = 0; pI < pipeBindings.length; pI += 1) {
-					pipeBindings[pI].clear();
-				}
+				handledEvents = [];
+				handlerBinding.clear();
 			}
 		}
 	}
