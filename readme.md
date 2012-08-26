@@ -5,7 +5,67 @@
 LucidJS is a library that allows you to make your own event emitters with ease.
 Its fully featured and works with plain old script tags, AMD module loaders, or even as a nodeJS module.
 
+##Examples
 
+###Simple Factory Functions
+
+In this example shows off one of the more simple emitter patterns. This is ment to give you a glimps into 
+how you can use emitters in your projects.
+
+	//we create a dog, Spot, and two puppies, Dot and Chip.
+	var spot = Dog('Spot');
+	var dot = Puppy('Dot', spot);
+	var chip = Puppy('Chip', spot);
+	
+	//we make Spot bark, the puppies copies Spot.
+	spot.bark();
+	>> 'Spot: woof! woof!'
+	>> 'Dot: yip! yip!'
+	>> 'Chip: yip! yip!'
+	
+	//The dog factory
+	function Dog(name) {
+	
+		//create the return object/emitter
+		var dog = LucidJS.emitter();
+		
+		//attach the name and bark method
+		dog.name = name;
+		dog.bark = bark;
+		
+		//return the object/emitter
+		return dog;
+		
+		//makes the dog bark
+		function bark() {
+			dog.trigger('bark');
+			console.log(name + ': woof! woof!');
+		}
+	}
+	
+	//The puppy factory
+	function Puppy(name, parentDog) {
+		
+		//create the return object/emitter
+		var puppy = LucidJS.emitter();
+		
+		//if the parent dog barks the puppy will copy it
+		parentDog.on('bark', bark);
+		
+		//attach the parent dog, the name, and the bark method to the return object/emitter
+		puppy.parent = parentDog;
+		puppy.name = name;
+		puppy.bark = bark;
+		
+		//return the puppy object
+		return puppy;
+		
+		//makes the puppy bark
+		function bark() {
+			puppy.trigger('bark');
+			console.log(name + ': yip! yip!');
+		}
+	}
 
 ##Method documentation
 
