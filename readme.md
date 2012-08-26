@@ -2,73 +2,113 @@
 
 ##Decouple components, make them lucid.
 
-LucidJS is a library that allows you to make your own event emitters with ease.
-Its fully featured and works with plain old script tags, AMD module loaders, or even as a nodeJS module.
+LucidJS is an event emitter library  offering several unique features such as set events, emitter piping, DOM node Augmentation, sub events, along with the usual event triggering and binding. LucidJS emitters also feature meta events that allow listening for event binding and event triggering.
 
-##Examples
+It works with AMD loaders, on NodeJS, and with the good old script tag.
 
-###Simple Factory Functions
+###Set Events
 
-In this example shows off one of the more simple emitter patterns. This is ment to give you a glimps into 
-how you can use emitters in your projects.
+LucidJS emitters have a method called `.set()`. Set allows you to bind to an event even after it has happened.
 
-	//we create a dog, Spot, and two puppies, Dot and Chip.
-	var spot = Dog('Spot');
-	var dot = Puppy('Dot', spot);
-	var chip = Puppy('Chip', spot);
+	var emitter = LucidJS.emitter();
+	emitter.set('ready');
+	console.log('fired ready event');
+	setTimeout(function() {
+		emitter.on('ready', function() {
+			console.log('listener bound and executed after ready event');
+		});
+	}, 2000);
 	
-	//we make Spot bark, the puppies copies Spot.
-	spot.bark();
-	>> 'Spot: woof! woof!'
-	>> 'Dot: yip! yip!'
-	>> 'Chip: yip! yip!'
+	>>> fired ready event
+	>>> listener bound and executed after ready event
 	
-	//The dog factory
-	function Dog(name) {
-	
-		//create the return object/emitter
-		var dog = LucidJS.emitter();
-		
-		//attach the name and bark method
-		dog.name = name;
-		dog.bark = bark;
-		
-		//return the object/emitter
-		return dog;
-		
-		//makes the dog bark
-		function bark() {
-			dog.trigger('bark');
-			console.log(name + ': woof! woof!');
-		}
-	}
-	
-	//The puppy factory
-	function Puppy(name, parentDog) {
-		
-		//create the return object/emitter
-		var puppy = LucidJS.emitter();
-		
-		//if the parent dog barks the puppy will copy it
-		parentDog.on('bark', bark);
-		
-		//attach the parent dog, the name, and the bark method to the return object/emitter
-		puppy.parent = parentDog;
-		puppy.name = name;
-		puppy.bark = bark;
-		
-		//return the puppy object
-		return puppy;
-		
-		//makes the puppy bark
-		function bark() {
-			puppy.trigger('bark');
-			console.log(name + ': yip! yip!');
-		}
-	}
+Set is extremely useful for events that only happen once and indicate state. Its the perfect solution for `load`, `complete` or `ready` events.
 
-##Method documentation
+###Emitter Piping
 
+Sometimes its nice to have a collection of emitters and a central emitter to aggregate them. This is possible with LucidJS emitters.
+
+	var centralEmitter = LucidJS.emitter();
+	var emitterA = LucidJS.emitter();
+	var emitterB = LucidJS.emitter();
+	var emitterC = LucidJS.emitter();
+	
+	//pipe the foo event from emitter A
+	centralEmitter.pipe('foo', emitterA);
+	
+	//pipe the bar and baz event from emitter B
+	centralEmitter.pipe(['bar', 'baz'], emitterB);
+	
+	//pipe all events from emitter C
+	centralEmitter.pipe(emitterC);
+	
+###DOM Node Augmentation
+
+In the browser you may listen to the events emitted by DOM nodes using LucidJS's emitter API.
+
+	var button = document.getElementByID('button');
+	LucidJS.emitter(button);
+	button.on('click', function(event) {
+		console.log('the button was clicked');
+		event.preventDefault();
+	});
+
+As a side note any object or array can be augmented by passing it into `LucidJS.emitter()`, the emitter constructor. DOM node event capture is just an added bonus.
+
+###Sub Events
+
+Ever wish you could have events with sub events? LucidJS makes this possible. Trigger an event called `foo.bar.baz` will trigger `foo.bar.baz`, `foo.bar`, and `foo`.
+
+	var emitter = LucidJS.emitter();
+	emitter.on('foo.bar', function() {
+		console.log('foo.bar');
+	});
+	emitter.on('foo', function() {
+		console.log('foo');
+	});
+	emitter.trigger('foo.bar.baz');
+
+	>>> 'foo.bar'
+	>>> 'foo'
+	
+###Simple Events
+
+Along with all the tasty bits above LucidJS emitters are also very good at good old regular event passing.
+
+	var emitter = LucidJS.emitter();
+	emitter.on('foo', function(arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
+		console.log([arg1, arg2, arg3, arg4, arg5, arg6, arg7].join(' '));
+	});
+	emitter.trigger('foo', 'any', 'number', 'of', 'arguments', 'can', 'be', 'passed');
+	
+	>>> 'any number of arguments can be passed'
+	
+###Meta Events
+
+LucidJS each emitter also emits a set of meta events that let you listen for new listeners on an emitter.
+
+	var emitter = LucidJS.emitter();
+	emitter.on('emitter.listener', function(event, listeners) {
+		console.log('captured listeners', listeners, 'on event ' + event);
+	});
+	emitter.on('foo', function() { console.log('bar'); });
+	
+	>>> 'captured listeners' [
+			function() { console.log('bar'); }
+		] 'on event foo'
+
+You can event listen to all of the events emitted by an emitter.
+
+	var emitter = LucidJS.emitter();
+	emitter.on('emitter.event', function(event) {
+		console.log('captured event ' + event);
+	});
+	emitter.trigger('foo');
+	
+	>>> 'captured event foo'
+	
+
+##Documentation
 
 ### LucidJS.emitter()
 
