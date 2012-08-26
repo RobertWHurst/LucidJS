@@ -55,14 +55,14 @@ Creates an event emitter and returns it. If an object is passed in the object is
 
 ### emitter{}
 
-	emitter => {}
+	emitter
 		on()
 		once()
 		trigger()
 		set()
-		pipe() => {}
+		pipe()
 			clear()
-		listeners() => {}
+		listeners()
 			clear()
 
 The emitter object is produced `LucidJS.emitter`. Any objects passed into `LucidJS.emitter` will have all of the above methods attached. The emitter object contains the API for interacting with the emitter.
