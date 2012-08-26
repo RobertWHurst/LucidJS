@@ -12,12 +12,12 @@ Its fully featured and works with plain old script tags, AMD module loaders, or 
 
 ### LucidJS.emitter()
 
-	LucidJS.emitter([object object]) => object emitter
-	LucidJS.emitter([object node]) => object emitter
 	
 Creates an event emitter and returns it. If an object is passed in the object is augmented with emitter methods. If a DOM node is passed in it will also be augmented, however any DOM events emitted by the node will also be emitted by the emitter.
 
 #### Arguments
+
+	LucidJS.emitter([object object]) => object emitter
 
 <table>
 	<thead>
@@ -35,6 +35,9 @@ Creates an event emitter and returns it. If an object is passed in the object is
 		</tr>
 	</tbody>
 </table>
+
+	LucidJS.emitter([object node]) => object emitter
+
 <table>
 	<thead>
 		<tr>
@@ -69,9 +72,6 @@ The emitter object is produced `LucidJS.emitter`. Any objects passed into `Lucid
 
 
 ### emitter.on()
-
-	emitter.on(string event, function listener[, ...]) => object binding
-	emitter.on(array events, function listener[, ...]) => object binding
 	
 Binds any number of listener callbacks to an event or an array of events. Whenever the given event or events are triggered or set on emitter, the listener callbacks will be executed. Any arguments passed to `trigger()` after the event will be passed into the listener callbacks on execution.
 
@@ -81,6 +81,8 @@ If the event was from a DOM node and `false` is returned both `event.stopPropiga
 `emitter.on` returns a `binding` object that can be used to modify the event binding.
 
 #### Arguments
+
+	emitter.on(string event, function listener[, ...]) => object binding
 
 <table>
 	<thead>
@@ -103,6 +105,8 @@ If the event was from a DOM node and `false` is returned both `event.stopPropiga
 		</tr>
 	</tbody>
 </table>
+
+	emitter.on(array events, function listener[, ...]) => object binding
 
 <table>
 	<thead>
@@ -129,13 +133,13 @@ If the event was from a DOM node and `false` is returned both `event.stopPropiga
 
 ### emitter.once()
 
-	emitter.once(string event, function listener[, …]) => object binding
-
 Binds a listener to an event. Acts exactly like `emitter.on` with the exception that once the given event is triggered the binding is automatically cleared. Because of this any listeners bound with `emitter.once` will once fire once.
 
 `emitter.once` returns a `binding` object that can be used to modify the event binding.
 
 #### Arguments
+
+	emitter.once(string event, function listener[, …]) => object binding
 
 <table>
 	<thead>
@@ -158,6 +162,9 @@ Binds a listener to an event. Acts exactly like `emitter.on` with the exception 
 		</tr>
 	</tbody>
 </table>
+
+	emitter.once(array events, function listener[, …]) => object binding
+
 <table>
 	<thead>
 		<tr>
@@ -183,14 +190,13 @@ Binds a listener to an event. Acts exactly like `emitter.on` with the exception 
 
 ### emitter.trigger()
 
-	emitter.trigger(string event, * arg[, ...]) => bool successful
-	emitter.trigger(array events, * arg[, ...]) => bool successful
-
 Triggers an event or an array of events on the emitter. Any listeners bound with `emitter.on` or `emitter.once` will be executed. Any additional arguments passed into `emitter.trigger` excluding the first argument; the event, will be passed to any and all listeners bound to the emitter.
 
 If any listeners triggered explicitly return `false` then `emitter.trigger` will return false as well.
 
 #### Arguments
+
+	emitter.trigger(string event, * arg[, ...]) => bool successful
 
 <table>
 	<thead>
@@ -213,6 +219,8 @@ If any listeners triggered explicitly return `false` then `emitter.trigger` will
 		</tr>
 	</tbody>
 </table>
+
+	emitter.trigger(array events, * arg[, ...]) => bool successful
 
 <table>
 	<thead>
@@ -239,12 +247,11 @@ If any listeners triggered explicitly return `false` then `emitter.trigger` will
 
 ### emitter.set()
 
-	emitter.set(string event, * arg[, ...]) => bool successful
-	emitter.set(array events, * arg[, ...]) => bool successful
-
 Works like trigger except that any listeners bound to the event or events after `emitter.set` is called will be fired as soon as they are bound. This is great of events that only happen once such as a `load` event. It prevents your listeners from missing an event because it has already fired prior to binding them.
 
 #### Arguments
+
+	emitter.set(string event, * arg[, ...]) => bool successful
 
 <table>
 	<thead>
@@ -268,6 +275,8 @@ Works like trigger except that any listeners bound to the event or events after 
 	</tbody>
 </table>
 
+	emitter.set(array events, * arg[, ...]) => bool successful
+	
 <table>
 	<thead>
 		<tr>
@@ -292,16 +301,14 @@ Works like trigger except that any listeners bound to the event or events after 
 
 
 ### emitter.pipe()
-
-	emitter.pipe(object emitter[, ...]) => object pipe
-	emitter.pipe(string event, object emitter[, ...]) => object pipe
-	emitter.pipe(array events, object emitter[, ...]) => object pipe
 	
 Pipes all events or select events from one or more emitters, into another. Any events emitted by the piped emitters will also be emitted by the emitter pipe was called on. This is extremely powerful and allows you to chain your emitters.
 
 Returns a pipe object that can be used to clear the pipe.
 
 #### Arguments
+
+	emitter.pipe(object emitter[, ...]) => object pipe
 
 <table>
 	<thead>
@@ -319,6 +326,8 @@ Returns a pipe object that can be used to clear the pipe.
 		</tr>
 	</tbody>
 </table>
+
+	emitter.pipe(string event, object emitter[, ...]) => object pipe
 
 <table>
 	<thead>
@@ -341,6 +350,8 @@ Returns a pipe object that can be used to clear the pipe.
 		</tr>
 	</tbody>
 </table>
+
+	emitter.pipe(array events, object emitter[, ...]) => object pipe
 
 <table>
 	<thead>
