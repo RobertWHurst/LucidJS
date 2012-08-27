@@ -1,0 +1,111 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/usr/local/bin/npm', 'publish' ]
+info using npm@1.1.24
+info using node@v0.6.19
+verbose config file /Users/roberthurst/.npmrc
+verbose config file /usr/local/etc/npmrc
+verbose config file /usr/local/lib/node_modules/npm/npmrc
+verbose publish [ '.' ]
+verbose caching /Users/roberthurst/LucidJS/package.json
+verbose loadDefaults lucidjs@1.0.1
+verbose cache add [ '.', null ]
+silly cache add: name, spec, args [ undefined, '.', [ '.', null ] ]
+verbose parsed url { pathname: '.', path: '.', href: '.' }
+verbose caching package.json
+verbose loadDefaults lucidjs@1.0.1
+verbose tar.pack [ '/var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/tmp.tgz',
+verbose tar.pack   '.' ]
+verbose tarball /var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/tmp.tgz
+verbose folder .
+info prepublish lucidjs@1.0.1
+verbose unpack /var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/tmp.tgz
+silly gunzTarPerm modes [ '755', '644' ]
+silly extracting entry package.json
+silly extracting entry .npmignore
+silly extracting entry lucid.js
+silly extracting entry license.txt
+silly extracting entry readme.md
+silly extracting entry tests/tests.js
+silly extracting entry tests/index.html
+silly extracting entry tests/lib/qunit.js
+silly extracting entry tests/lib/qunit.css
+verbose caching /var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/package/package.json
+verbose loadDefaults lucidjs@1.0.1
+verbose from cache /var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/package/package.json
+verbose tar.pack [ '/Users/roberthurst/.npm/lucidjs/1.0.1/package.tgz',
+verbose tar.pack   '/var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/package' ]
+verbose tarball /Users/roberthurst/.npm/lucidjs/1.0.1/package.tgz
+verbose folder /var/folders/19/j8m13p0d41j0742cvqkt7gx00000gn/T/npm-1346030163942/1346030163942-0.9363416871055961/package
+verbose unpack /Users/roberthurst/.npm/lucidjs/1.0.1/package.tgz
+silly gunzTarPerm modes [ '755', '644' ]
+silly extracting entry package.json
+silly extracting entry .npmignore
+silly extracting entry lucid.js
+silly extracting entry license.txt
+silly extracting entry readme.md
+silly extracting entry tests/tests.js
+silly extracting entry tests/index.html
+silly extracting entry tests/lib/qunit.js
+silly extracting entry tests/lib/qunit.css
+verbose caching /Users/roberthurst/.npm/lucidjs/1.0.1/package/package.json
+verbose loadDefaults lucidjs@1.0.1
+silly updated sha bytes 22011
+info shasum 5ab2b468550dc6eef8e8b3fa7c53ea5358df6a38
+info shasum /Users/roberthurst/.npm/lucidjs/1.0.1/package.tgz
+verbose from cache /Users/roberthurst/.npm/lucidjs/1.0.1/package/package.json
+verbose chmod /Users/roberthurst/.npm/lucidjs/1.0.1/package.tgz 644
+verbose chown [ '/Users/roberthurst/.npm/lucidjs/1.0.1/package.tgz', 501, 20 ]
+silly publish { name: 'lucidjs',
+silly publish   description: 'LucidJS is an uber simple and easy to use event emitter library. Lucid allows you to create your own event system and even pipe in events from any number of DOM elements.',
+silly publish   version: '1.0.1',
+silly publish   main: './lucid.js',
+silly publish   keywords: [ 'Event Emitter' ],
+silly publish   maintainers: 
+silly publish    [ { name: 'Robert Hurst',
+silly publish        email: 'RobertWHurst@Gmail.com',
+silly publish        url: 'http://github.com/RobertWHurst' } ],
+silly publish   bugs: { url: 'https://github.com/RobertWHurst/LucidJS/issues' },
+silly publish   repositories: [ { type: 'git', url: 'git@github.com:RobertWHurst/LucidJS.git' } ],
+silly publish   licenses: 
+silly publish    [ { name: 'BSD License',
+silly publish        url: 'https://raw.github.com/RobertWHurst/LucidJS/master/license.txt' } ],
+silly publish   homepage: 'http://robertwhurst.github.com/LucidJS/',
+silly publish   _npmUser: { name: 'robertwhurst', email: 'robertwhurst@gmail.com' },
+silly publish   _id: 'lucidjs@1.0.1',
+silly publish   dependencies: {},
+silly publish   devDependencies: {},
+silly publish   optionalDependencies: {},
+silly publish   engines: { node: '*' },
+silly publish   _engineSupported: true,
+silly publish   _npmVersion: '1.1.24',
+silly publish   _nodeVersion: 'v0.6.19',
+silly publish   _defaultsLoaded: true,
+silly publish   dist: 
+silly publish    { shasum: '5ab2b468550dc6eef8e8b3fa7c53ea5358df6a38',
+silly publish      tarball: 'http://registry.npmjs.org/lucidjs/-/lucidjs-1.0.1.tgz' } }
+verbose raw, before any munging lucidjs
+verbose url resolving [ 'https://registry.npmjs.org/', './lucidjs' ]
+verbose url resolved https://registry.npmjs.org/lucidjs
+http PUT https://registry.npmjs.org/lucidjs
+http 409 https://registry.npmjs.org/lucidjs
+verbose raw, before any munging lucidjs
+verbose url resolving [ 'https://registry.npmjs.org/', './lucidjs' ]
+verbose url resolved https://registry.npmjs.org/lucidjs
+http GET https://registry.npmjs.org/lucidjs
+http 200 https://registry.npmjs.org/lucidjs
+info Already published lucidjs@1.0.1
+verbose uploading bin dists []
+ERR! publish fail Cannot publish over existing version.
+ERR! publish fail Bump the 'version' field, set the --force flag, or
+ERR! publish fail     npm unpublish 'lucidjs@1.0.1'
+ERR! publish fail and try again
+ERR! 
+ERR! System Darwin 11.4.0
+ERR! command "node" "/usr/local/bin/npm" "publish"
+ERR! cwd /Users/roberthurst/LucidJS
+ERR! node -v v0.6.19
+ERR! npm -v 1.1.24
+ERR! code EPUBLISHCONFLICT
+ERR! message publish fail
+ERR! errno {}
+verbose exit [ 1, true ]
