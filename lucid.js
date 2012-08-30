@@ -102,6 +102,7 @@
 			return binding;
 
 			function clear() {
+				if(!listeners[event]) { return; }
 				for(aI = 0; aI < args.length; aI += 1) {
 					listeners[event].splice(listeners[event].indexOf(args[aI]), 1);
 				}
@@ -250,12 +251,32 @@
 			var args = Array.prototype.slice.apply(arguments);
 
 			if(typeof event === 'object' && typeof event.on === 'function') { return pipeAll(args); }
-			if(typeof event !== 'string') { throw new Error('Cannot create pipe. The first argument must be an event string.'); }
+			if(typeof event !== 'string' && (typeof event !== 'object' || typeof event.push !== 'function')) { throw new Error('Cannot create pipe. The first argument must be an event string.'); }
 
 			return pipeEvent(event, args.slice(1));
 
 			function pipeEvent(event, args) {
 				var aI, pipeBindings = [], pipe = {};
+
+				if(typeof event === 'object' && typeof event.push === 'function') {
+					return (function(events) {
+						var pipe = {}, eI, eventPipes = [];
+						for(eI = 0; eI < events.length; eI += 1) {
+							eventPipes.push(pipeEvent(events[eI], args));
+						}
+
+						pipe.clear = clear;
+
+						return pipe;
+
+						function clear() {
+							while(eventPipes.length) {
+								eventPipes[0].clear();
+								eventPipes.splice(0, 1);
+							}
+						}
+					})(event);
+				}
 
 				if(event.slice(0, 7) === 'emitter') { throw new Error('Cannot pipe event "' + event + '". Events beginning with "emitter" cannot be piped.'); }
 
@@ -282,9 +303,22 @@
 			}
 
 			function pipeAll(args) {
-				return on('emitter.handler', function(event) {
-					pipeEvent(event, args);
+				var pipe = {}, binding, eventPipes = [];
+
+				binding = on('emitter.handler', function(event) {
+					eventPipes.push(pipeEvent(event, args));
 				});
+
+				pipe.clear = clear;
+				return pipe;
+
+				function clear() {
+					binding.clear();
+					while(eventPipes.length) {
+						eventPipes[0].clear();
+						eventPipes.splice(0, 1);
+					}
+				}
 			}
 
 		}
@@ -343,6 +377,7 @@
 			delete emitter.set;
 			delete emitter.pipe;
 			delete emitter.listeners;
+			delete emitter.clear;
 		}
 
 		/**
@@ -417,4 +452,5 @@
 			}
 		}
 	}
+
 });
