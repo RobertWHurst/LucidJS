@@ -69,9 +69,9 @@
 			//recurse over a batch of events
 			if(typeof event === 'object' && typeof event.push === 'function') { return batchOn(event, args); }
 
-			//trigger the handler event
+			//trigger the listener event
 			if(event.slice(0, 7) !== 'emitter') {
-				trigger('emitter.handler', event, args);
+				trigger('emitter.listener', event, args);
 			}
 
 			//check for a set event
@@ -305,7 +305,7 @@
 			function pipeAll(args) {
 				var pipe = {}, binding, eventPipes = [];
 
-				binding = on('emitter.handler', function(event) {
+				binding = on('emitter.listener', function(event) {
 					eventPipes.push(pipeEvent(event, args));
 				});
 
@@ -385,9 +385,9 @@
 		 * @param node
 		 */
 		function handleNode(node) {
-			var handledEvents = [], handlerBinding, DOMEventListeners = [];
+			var handledEvents = [], listenerBinding, DOMEventListeners = [];
 
-			handlerBinding = on('emitter.handler', function(event) {
+			listenerBinding = on('emitter.listener', function(event) {
 				if(handledEvents.indexOf(event) > -1) { return; }
 				handledEvents.push(event);
 
@@ -448,7 +448,7 @@
 				}
 
 				handledEvents = [];
-				handlerBinding.clear();
+				listenerBinding.clear();
 			}
 		}
 	}
