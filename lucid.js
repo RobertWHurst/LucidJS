@@ -42,15 +42,28 @@
 	function EventEmitter(object) {
 		var emitter = object || {}, listeners = {}, setEvents = {}, pipes = {};
 
-		emitter.on = on;
-		emitter.once = once;
-		emitter.trigger = trigger;
-		emitter.set = set;
-		emitter.set.clear = clearSet;
-		emitter.pipe = pipe;
-		emitter.pipe.clear = clearPipes;
-		emitter.listeners = getListeners;
-		emitter.listeners.clear = clearListeners;
+		//augment an object if it isn't already an emitter
+		if(
+			!emitter.on &&
+			!emitter.once &&
+			!emitter.trigger &&
+			!emitter.set &&
+			!emitter.pipe &&
+			!emitter.pipe &&
+			!emitter.listeners
+		) {
+			emitter.on = on;
+			emitter.once = once;
+			emitter.trigger = trigger;
+			emitter.set = set;
+			emitter.set.clear = clearSet;
+			emitter.pipe = pipe;
+			emitter.pipe.clear = clearPipes;
+			emitter.listeners = getListeners;
+			emitter.listeners.clear = clearListeners;
+		} else {
+			return emitter;
+		}
 
 		if(emitter.addEventListener || emitter.attachEvent) {
 			handleNode(emitter);
