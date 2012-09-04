@@ -49,7 +49,6 @@
 			!emitter.trigger &&
 			!emitter.set &&
 			!emitter.pipe &&
-			!emitter.pipe &&
 			!emitter.listeners
 		) {
 			emitter.on = on;
