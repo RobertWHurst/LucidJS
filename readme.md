@@ -171,6 +171,14 @@ Creates an event emitter and returns it. If an object is passed in the object is
 The emitter object is produced `LucidJS.emitter`. Any objects passed into `LucidJS.emitter` will have all of the above methods attached. The emitter object contains the API for interacting with the emitter.
 
 
+### binding{}
+
+	binding
+		clear()
+
+The binding object is returned by `emitter.on`, `emitter.once`, `emitter.set`, and `emitter.pipe`. Executing `binding.clear()` will destroy the event binding or pipe that the binding was returned from.
+
+
 ### emitter.on()
 	
 Binds any number of listener callbacks to an event or an array of events. Whenever the given event or events are triggered or set on emitter, the listener callbacks will be executed. Any arguments passed to `trigger()` after the event will be passed into the listener callbacks on execution.
