@@ -179,6 +179,9 @@
 			while(event.length) {
 				eventListeners = listeners[event.join('.')];
 				if(eventListeners) {
+					// Clone the listeners array to avoid dynamic length
+					// issues, caused by listeners from "once".
+					eventListeners = [].concat( eventListeners );
 					for(lI = 0; lI < eventListeners.length; lI += 1) {
 						if(eventListeners[lI].apply(this, args) === false) {
 							result = false;
