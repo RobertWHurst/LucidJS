@@ -156,9 +156,11 @@
 
 				for(aI = 0; aI < args.length; aI += 1) {
 					if(args[aI].apply(this, eventArgs) === false) {
-						result = true;
+						result = false;
 					}
 				}
+
+				return result
 			});
 
 			return binding;
