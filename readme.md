@@ -1,4 +1,3 @@
-
 #LucidJS
 
 ##Decouple components, make them lucid.
@@ -137,7 +136,7 @@ Creates an event emitter and returns it. If an object is passed in the object is
 	</tbody>
 </table>
 
-	LucidJS.emitter([object node]) => object emitter
+	LucidJS.emitter([object DOMNode]) => object emitter
 
 <table>
 	<thead>
@@ -149,7 +148,7 @@ Creates an event emitter and returns it. If an object is passed in the object is
 	</thead>
 	<tbody>
 		<tr>
-			<td>node</td>
+			<td>DOMNode</td>
 			<td>Optional. Any DOM node you wish to turn into an emitter.</td>
 			<td>object</td>
 		</tr>
@@ -486,12 +485,12 @@ Returns a pipe object that can be used to clear the pipe.
 
 
 ### emitter.pipe.clear()
-
-	emitter.pipe.clear([string event])
 	
 Allows clearing all pipes, or pipes that transport select events. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.
 
 #### Arguments
+
+	emitter.pipe.clear(string event)
 
 <table>
 	<thead>
@@ -512,8 +511,6 @@ Allows clearing all pipes, or pipes that transport select events. If an event na
 
 
 ### emitter.listeners()
-
-	emitter.listeners([string event]) => object eventlisteners
 	
 Allows access to the emitter's bound event listeners.
 
@@ -522,6 +519,8 @@ If an event name is given, the array of listeners bound to the named event will 
 Directly editing the listeners array is not recommended, however it may be necessary to achieve certain types of functionally in specific cases.
 
 #### Arguments
+
+	emitter.listeners([string event]) => object eventlisteners
 
 <table>
 	<thead>
@@ -542,12 +541,12 @@ Directly editing the listeners array is not recommended, however it may be neces
 
 
 ### emitter.listeners.clear()
-
-	emitter.listeners.clear([string event])
 	
 Clears listeners bound to the emitter. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.
 
 #### Arguments
+
+	emitter.listeners.clear([string event])
 
 <table>
 	<thead>
