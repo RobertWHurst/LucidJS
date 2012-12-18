@@ -1,3 +1,4 @@
+
 #LucidJS
 
 ##Decouple components, make them lucid.
@@ -571,4 +572,5 @@ Clears listeners bound to the emitter. If an event name is given, only listeners
 If you like my library feel free to use it however you want. If you wish to contribute to LucidJS please feel free to send me a pull request or make your own fork. Commentary is welcome on any of my projects.
 
 Cheers and happy coding.
+
 
