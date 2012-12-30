@@ -11,6 +11,8 @@
 	* [Emitter](#emitter)
 	* [Emitter.on()](#emitter-on)
 	* [Emitter.once()](#emitter-once)
+	* [Emitter.trigger()](#emitter-trigger)
+	* [Emitter.set()](#emitter-set)
 	* [Emitter.pipe()](#emitter-pipe)
 	* [Emitter.pipe.clear()](#emitter-pipe-clear)
 	* [Emitter.listeners()](#emitter-listeners)
