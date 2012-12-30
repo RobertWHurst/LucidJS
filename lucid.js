@@ -301,11 +301,7 @@
 				if(event.slice(0, 7) === 'emitter') { throw new Error('Cannot pipe event "' + event + '". Events beginning with "emitter" cannot be piped.'); }
 
 				for(aI = 0; aI < args.length; aI += 1) {
-					pipeBindings.push(args[aI].on(event, function(    ) {
-						var args = Array.prototype.slice.apply(arguments);
-						args.unshift(event);
-						return trigger.apply(this, args);
-					}));
+					pipeBindings.push(args[aI].on(event, captureEvent));
 				}
 
 				if(!pipes[event]) { pipes[event] = []; }
@@ -320,11 +316,24 @@
 						pipes[event].splice(pipes[event].indexOf(pipeBindings), 1);
 					}
 				}
+
+				function captureEvent(    ) {
+					var args = Array.prototype.slice.apply(arguments);
+					args.unshift(event);
+					return trigger.apply(this, args);
+				}
 			}
 
 			function pipeAll(args) {
-				var pipe = {}, binding, eventPipes = [];
+				var pipe = {}, binding, eventPipes = [], event;
 
+				//bind existing listeners
+				for(event in listeners) {
+					if(!listeners.hasOwnProperty(event)) { continue; }
+					eventPipes.push(pipeEvent(event, args));
+				}
+
+				//bind all future listeners
 				binding = on('emitter.listener', function(event) {
 					eventPipes.push(pipeEvent(event, args));
 				});
