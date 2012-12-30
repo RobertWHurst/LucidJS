@@ -40,7 +40,7 @@
 	 * Creates a event emitter.
 	 */
 	function EventEmitter(object) {
-		var emitter = object || {}, listeners = {}, setEvents = {}, pipes = {};
+		var emitter = object || {}, listeners = {}, setEvents = {}, pipes = [];
 
 		//augment an object if it isn't already an emitter
 		if(
@@ -160,7 +160,7 @@
 					}
 				}
 
-				return result
+				return result;
 			});
 
 			return binding;
@@ -264,92 +264,110 @@
 
 		/**
 		 * Pipes events from another emitter.
-		 * @param event
+		 * @param event [optional]
 		 * @return {Object}
 		 */
-		function pipe(event     ) {
-			var args = Array.prototype.slice.apply(arguments);
+		function pipe(event    ) {
+			var api = {}, args = Array.prototype.slice.apply(arguments), eI, aI, pI, connections = [], connection, bindings = [],
+			binding;
 
-			if(typeof event === 'object' && typeof event.on === 'function') { return pipeAll(args); }
-			if(typeof event !== 'string' && (typeof event !== 'object' || typeof event.push !== 'function')) { throw new Error('Cannot create pipe. The first argument must be an event string.'); }
-
-			return pipeEvent(event, args.slice(1));
-
-			function pipeEvent(event, args) {
-				var aI, pipeBindings = [], pipe = {};
-
-				if(typeof event === 'object' && typeof event.push === 'function') {
-					return (function(events) {
-						var pipe = {}, eI, eventPipes = [];
-						for(eI = 0; eI < events.length; eI += 1) {
-							eventPipes.push(pipeEvent(events[eI], args));
-						}
-
-						pipe.clear = clear;
-
-						return pipe;
-
-						function clear() {
-							while(eventPipes.length) {
-								eventPipes[0].clear();
-								eventPipes.splice(0, 1);
-							}
-						}
-					})(event);
+			if(typeof event === 'object' && typeof event.push === 'function' && typeof event[0] === 'string') {
+				for(eI = 0; eI < event.length; eI += 1) {
+					bindings.push(pipe.apply(null, [event[eI]].concat(args)));
 				}
 
-				if(event.slice(0, 7) === 'emitter') { throw new Error('Cannot pipe event "' + event + '". Events beginning with "emitter" cannot be piped.'); }
+				api.clear = clearBatch;
+				return api;
+			}
 
-				for(aI = 0; aI < args.length; aI += 1) {
-					pipeBindings.push(args[aI].on(event, captureEvent));
+
+			if(typeof event === 'object' && typeof event.on === 'function') { event = false; } else { args.shift(); }
+			if(event !== false && typeof event !== 'string') { throw new Error('Cannot create pipe. The first argument must be an event string or an emitter.'); }
+
+			for(aI = 0; aI < args.length; aI += 1) {
+
+				for(pI = 0; pI < pipes.length; pI += 1) {
+					if(pipes[pI].emitter !== args[aI]) {
+						connection = pipes[pI];
+						break;
+					}
 				}
+				if(connection && connection.type === 2) { continue; }
 
-				if(!pipes[event]) { pipes[event] = []; }
-				pipes[event].push(pipeBindings);
-
-				pipe.clear = clear;
-
-				return pipe;
-
-				function clear() {
-					if(pipes[event]) {
-						pipes[event].splice(pipes[event].indexOf(pipeBindings), 1);
+				if(!connection) {
+					connection = {};
+					connection.emitter = args[aI];
+					connection.bindings = [];
+					connection.events = [];
+					if(event) {
+						connection.type = 1;
+					} else {
+						connection.type = 2;
 					}
 				}
 
-				function captureEvent(    ) {
-					var args = Array.prototype.slice.apply(arguments);
-					args.unshift(event);
-					return trigger.apply(this, args);
+				if(connection.type === 1) {
+					if(connection.events.indexOf(event) === -1) {
+						binding = args[aI].on(event, captureEvent);
+						binding.event = event;
+						connection.bindings.push(binding);
+						connection.events.push(event);
+					}
+				} else if(connection.type === 2) {
+					for(event in listeners) {
+						if(!listeners.hasOwnProperty(event)) { continue; }
+						if(connection.events.indexOf(event) === -1) {
+							binding = args[aI].on(event, captureEvent);
+							binding.event = event;
+							connection.bindings.push(binding);
+							connection.events.push(event);
+						}
+					}
+					connection.listenerBinding = on('emitter.listener', captureListener);
+				}
+
+				connections.push(connection);
+				pipes.push(connection);
+			}
+
+			api.clear = clear;
+			return api;
+
+			function captureListener(event) {
+				if(connection.events.indexOf(event) === -1) {
+					connection.bindings.push(args[aI].on(event, captureEvent));
+					connection.events.push(event);
 				}
 			}
 
-			function pipeAll(args) {
-				var pipe = {}, binding, eventPipes = [], event;
+			function captureEvent(    ) {
+				var args = Array.prototype.slice.apply(arguments);
+				args.unshift(event);
+				return trigger.apply(this, args);
+			}
 
-				//bind existing listeners
-				for(event in listeners) {
-					if(!listeners.hasOwnProperty(event)) { continue; }
-					eventPipes.push(pipeEvent(event, args));
-				}
-
-				//bind all future listeners
-				binding = on('emitter.listener', function(event) {
-					eventPipes.push(pipeEvent(event, args));
-				});
-
-				pipe.clear = clear;
-				return pipe;
-
-				function clear() {
-					binding.clear();
-					while(eventPipes.length) {
-						eventPipes[0].clear();
-						eventPipes.splice(0, 1);
+			function clearBatch() {
+				if(bindings.length) {
+					while(bindings.length) {
+						bindings[0].clear();
+						bindings.splice(0, 1);
 					}
 				}
 			}
 
+			function clear() {
+				while(connections.length) {
+					if(connections[0].listenerBinding) {
+						connections[0].listenerBinding.clear();
+					}
+					while(connections[0].bindings.length) {
+						connections[0].bindings[0].clear();
+						connections[0].bindings.splice(0, 1);
+					}
+					pipes.splice(pipes.indexOf(connections[0]), 1);
+					connections.splice(0, 1);
+				}
+			}
 		}
 
 		/**
@@ -357,10 +375,25 @@
 		 * @param event
 		 */
 		function clearPipes(event) {
-			if(event) {
-				delete pipes[event];
-			} else {
-				pipes = {};
+			var pI, bI, binding;
+
+			for(pI = 0; pI < pipes.length; pI += 1) {
+				if(event) {
+					if(pipes[pI].type === 2) { continue; }
+					if(pipes[pI].events.indexOf(event) === -1) { continue; }
+					pipes[pI].events.splice(pipes[pI].events.indexOf(event), 1);
+				}
+				if(pipes[pI].type === 2) { pipes[pI].listenerBinding.clear(); }
+				for(bI = 0; bI < pipes[pI].bindings.length; bI += 1) {
+					if(event && pipes[pI].bindings[bI].event !== event) { continue; }
+					pipes[pI].bindings[bI].clear();
+					pipes[pI].bindings.splice(bI, 1);
+					bI -= 1;
+				}
+				if(pipes[pI].bindings.length < 1) {
+					pipes.splice(pI, 1);
+					pI -= 1;
+				}
 			}
 		}
 
