@@ -52,6 +52,7 @@
 			!emitter.listeners
 		) {
 			emitter.on = on;
+			emitter.off = off;
 			emitter.once = once;
 			emitter.trigger = trigger;
 			emitter.set = set;
@@ -139,6 +140,31 @@
 						bindings[bI].clear();
 					}
 				}
+			}
+		}
+		/**
+		 * Unbinds listeners to events.
+		 * @param event
+		 * @return {Object}
+		 */
+		function off(event     ) {
+			var args = Array.prototype.slice.apply(arguments, [1]), aI, sI;
+
+			//recurse over a batch of events
+			if(typeof event === 'object' && typeof event.push === 'function') { 
+				for(sI = 0; sI < event.length; sI += 1) {
+					off.apply(null, [event[sI]].concat(args));
+				}
+				return;
+			}
+
+			if(!listeners[event]) { throw new Error('Tried to remove an event from a non-existant event of type "'+event+'".'); }
+
+			//remove each callback
+			for(aI = 0; aI < args.length; aI += 1) {
+				if(typeof args[aI] !== 'function') { throw new Error('Tried to remove a non-function.'); }
+				var listenerIndex = listeners[event].indexOf(args[aI]);
+				listeners[event].splice(listenerIndex, 1);
 			}
 		}
 
