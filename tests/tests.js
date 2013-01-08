@@ -108,7 +108,7 @@ test('emitter.pipe', function() {
 	emitterB.trigger(['one', 'two', 'three']);
 	emitterC.trigger(['event', 'one', 'two', 'three']);
 
-	equal(results.toString(), ['one', 'two', 'three', 'event'].toString(), "Pipe should echo the events emitted by any emitters passed into it.")
+	equal(results.toString(), ['one', 'two', 'three', 'event'].toString(), "Pipe should echo the events emitted by any emitters passed into it.");
 });
 
 test('emitter.listeners', function() {
