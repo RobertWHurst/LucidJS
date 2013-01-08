@@ -287,11 +287,12 @@
 			for(aI = 0; aI < args.length; aI += 1) {
 
 				for(pI = 0; pI < pipes.length; pI += 1) {
-					if(pipes[pI].emitter !== args[aI]) {
+					if(pipes[pI].emitter === args[aI]) {
 						connection = pipes[pI];
 						break;
 					}
 				}
+
 				if(connection && connection.type === 2) { continue; }
 
 				if(!connection) {
@@ -306,24 +307,22 @@
 					}
 				}
 
+				if(connection.events.indexOf(event) !== -1) { continue; }
+				connection.events.push(event);
+
 				if(connection.type === 1) {
-					if(connection.events.indexOf(event) === -1) {
+					binding = captureEvent(args[aI], event);
+					binding.event = event;
+					connection.bindings.push(binding);
+				} else if(connection.type === 2) {
+					for(event in listeners) {
+						if(!listeners.hasOwnProperty(event)) { continue; }
 						binding = args[aI].on(event, captureEvent);
 						binding.event = event;
 						connection.bindings.push(binding);
 						connection.events.push(event);
 					}
-				} else if(connection.type === 2) {
-					for(event in listeners) {
-						if(!listeners.hasOwnProperty(event)) { continue; }
-						if(connection.events.indexOf(event) === -1) {
-							binding = args[aI].on(event, captureEvent);
-							binding.event = event;
-							connection.bindings.push(binding);
-							connection.events.push(event);
-						}
-					}
-					connection.listenerBinding = on('emitter.listener', captureListener);
+					captureListener(connection, args[aI]);
 				}
 
 				connections.push(connection);
@@ -333,17 +332,21 @@
 			api.clear = clear;
 			return api;
 
-			function captureListener(event) {
-				if(connection.events.indexOf(event) === -1) {
-					connection.bindings.push(args[aI].on(event, captureEvent));
-					connection.events.push(event);
-				}
+			function captureListener(connection, emitter) {
+				connection.listenerBinding = on('emitter.listener', function(event) {
+					if(connection.events.indexOf(event) === -1) {
+						connection.bindings.push(captureEvent(emitter, event));
+						connection.events.push(event);
+					}
+				});
 			}
 
-			function captureEvent(    ) {
-				var args = Array.prototype.slice.apply(arguments);
-				args.unshift(event);
-				return trigger.apply(this, args);
+			function captureEvent(emitter, event) {
+				return emitter.on(event, function(    ) {
+					var args = Array.prototype.slice.apply(arguments);
+					args.unshift(event);
+					return trigger.apply(this, args);
+				});
 			}
 
 			function clearBatch() {
