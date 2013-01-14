@@ -10,7 +10,7 @@
 * [Documentation](#documentation)
 	* [Emitter](#emitter)
 	* [Emitter.on()](#emitter-on)
-	* {Emitter.off()](#emitter-off)
+	* [Emitter.off()](#emitter-off)
 	* [Emitter.once()](#emitter-once)
 	* [Emitter.trigger()](#emitter-trigger)
 	* [Emitter.set()](#emitter-set)
