@@ -46,6 +46,20 @@ test('emitter.once', function() {
 	ok(fired === 2, 'emitter.once should only fire once. It should delete itself after fired.');
 });
 
+test('emitter.off', function() {
+	var emitter = LucidJS.emitter(), fired;
+
+	equal(typeof emitter.off, 'function', 'emitter.off should be a function.');
+	var listener = function() { fired = true; }
+	emitter.on('exec', listener);
+	emitter.trigger('exec');
+	emitter.off('exec', listener);
+	if(fired) { fired = 2; }
+	emitter.trigger('exec');
+
+	ok(fired === 2, 'events should not be triggered after being removed.');
+});
+
 test('emitter.trigger', function() {
 	var emitter = LucidJS.emitter(), results = [];
 
