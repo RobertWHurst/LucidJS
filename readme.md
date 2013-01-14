@@ -10,6 +10,7 @@
 * [Documentation](#documentation)
 	* [Emitter](#emitter)
 	* [Emitter.on()](#emitter-on)
+	* {Emitter.off()](#emitter-off)
 	* [Emitter.once()](#emitter-once)
 	* [Emitter.trigger()](#emitter-trigger)
 	* [Emitter.set()](#emitter-set)
@@ -280,6 +281,38 @@ emitter.on(array events, function listener[, ...]) => object binding
 	</tbody>
 </table>
 
+<a name="emitter-off"></a>
+### emitter.off()
+
+Clears any given listeners on a given event. This method has been added to allow users familar with jQuery or Backbone to get a quick start with the library. However you are encuraged to use the `binding.clear()` method instead.
+
+### Arguments
+```javascript
+emitter.off(string event, function listener[, ...])
+```
+
+<table width="100%">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Allowed Types</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>event</td>
+			<td>The name of the event that the listeners will be removed from.</td>
+			<td>string</td>
+		</tr>
+		<tr>
+			<td>listener</td>
+			<td>A callback that is already bound to the event. This callback will be removed from the event.</td>
+			<td>function</td>
+		</tr>
+	</tbody>
+</table>
+
 <a name="emitter-once"></a>
 ### emitter.once()
 
@@ -289,7 +322,7 @@ Binds a listener to an event. Acts exactly like `emitter.on` with the exception 
 
 #### Arguments
 ```javascript
-emitter.once(string event, function listener[, …]) => object binding
+emitter.once(string event, function listener[, ...]) => object binding
 ```
 
 <table width="100%">
@@ -314,7 +347,7 @@ emitter.once(string event, function listener[, …]) => object binding
 	</tbody>
 </table>
 ```javascript
-emitter.once(array events, function listener[, …]) => object binding
+emitter.once(array events, function listener[, ...]) => object binding
 ```
 
 <table width="100%">
