@@ -1,5 +1,7 @@
 #LucidJS
 
+[![endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
+
 #### Navigation
 * [Set Events](#set-events)
 * [Emitter Piping](#emitter-piping)
@@ -658,5 +660,7 @@ emitter.listeners.clear([string event])
 If you like my library feel free to use it however you want. If you wish to contribute to LucidJS please feel free to send me a pull request or make your own fork. Commentary is welcome on any of my projects.
 
 Cheers and happy coding.
+
+[![endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
 
 
