@@ -194,28 +194,48 @@
 
 		/**
 		 * Triggers events. Passes listeners any additional arguments.
+		 *  Optimized for 4 arguments.
 		 * @param event
 		 * @return {Boolean}
 		 */
-		function trigger(event     ) {
-			var args = Array.prototype.slice.apply(arguments, [1]), lI, eventListeners, result = true;
+		function trigger(event, a1, a2, a3, a4, la) {
+			var longArgs, lI, eventListeners, result = true;
 
-			if(typeof event === 'object' && typeof event.push === 'function') { return batchTrigger(event, args); }
+			if(typeof la !== 'undefined') {
+				longArgs = Array.prototype.slice.apply(arguments, [1]);
+			}
+
+			if(typeof event === 'object' && typeof event.push === 'function') {
+				if(longArgs) {
+					return batchTrigger.apply(null, arguments);
+				} else {
+					return batchTrigger(event, a1, a2, a3, a4);
+				}
+			}
 
 			event = event.split('.');
-
 			while(event.length) {
 				eventListeners = listeners[event.join('.')];
 
-				if(event.join('.').slice(0, 7) !== 'emitter') {
-					trigger.apply(this, [].concat('emitter.event', event.join('.'), args));
+				if(event[0] !== 'emitter') {
+					if(longArgs) {
+						trigger.apply(this, [].concat('emitter.event', event.join('.'), longArgs));
+					} else {
+						trigger('emitter.event', a1, a2, a3, a4);
+					}
 				}
 
 				if(eventListeners) {
 					eventListeners = [].concat(eventListeners);
 					for(lI = 0; lI < eventListeners.length; lI += 1) {
-						if(eventListeners[lI].apply(this, args) === false) {
-							result = false;
+						if(longArgs) {
+							if(eventListeners[lI].apply(this, longArgs) === false) {
+								result = false;
+							}
+						} else {
+							if(eventListeners[lI](a1, a2, a3, a4) === false) {
+								result = false;
+							}
 						}
 					}
 				}
@@ -224,12 +244,22 @@
 
 			return result;
 
-			function batchTrigger(events, args) {
+			function batchTrigger(events, a1, a2, a3, a4, la) {
 				var eI, result = true;
+
+				if(typeof la !== 'undefined') {
+					longArgs = Array.prototype.slice.apply(arguments, [1]);
+				}
+
 				for(eI = 0; eI < events.length; eI += 1) {
-					args.unshift(events[eI]);
-					if(trigger.apply(this, args) === false) { result = false; }
-					args.shift();
+					if(longArgs) {
+						args.unshift(events[eI]);
+						if(trigger.apply(this, args) === false) { result = false; }
+						args.shift();
+					} else {
+						if(trigger(events[eI], a1, a2, a3, a4) === false) { result = false; }
+					}
+
 				}
 				return result;
 			}
