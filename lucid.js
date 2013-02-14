@@ -15,7 +15,7 @@
 		define(factory);
 
 	//NODE
-	} else if(typeof module === 'object' && module.exports) {
+	} else if((typeof module == 'object' || typeof module == 'function') && module.exports) {
 		module.exports = factory();
 
 	//GLOBAL
