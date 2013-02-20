@@ -87,20 +87,6 @@
 				trigger('emitter.listener', event, args);
 			}
 
-			//check for a set event
-			if(setEvents[event]) {
-				for(aI = 0; aI < args.length; aI += 1) {
-					if(typeof args[aI] !== 'function') { throw new Error('Cannot bind event. All callbacks must be functions.'); }
-					for(sI = 0; sI < setEvents[event].length; sI += 1) {
-						args[aI].apply(this, setEvents[event][sI]);
-					}
-				}
-
-				binding.clear = function() {};
-
-				return binding;
-			}
-
 			//create the event
 			if(!listeners[event]) { listeners[event] = []; }
 
@@ -270,39 +256,34 @@
 		 * @param event
 		 * @return {*}
 		 */
-		function set(event     ) {
-			var args = Array.prototype.slice.apply(arguments), setEvent = {};
+		function set(event, a1, a2, a3, a4, la) {
+			var args, binding, _clear;
 
-			if(typeof event === 'object' && typeof event.push === 'function') { return batchSet(event, args); }
+			if(la) { args = Array.prototype.slice.apply(arguments, [1]); }
+			if(la) { trigger.apply(arguments) }
+			else { trigger(event, a1, a2, a3, a4); }
 
-			//execute all of the existing binds for the event
-			trigger.apply(this, args);
-			clearListeners(event);
-
-			if(!setEvents[event]) { setEvents[event] = []; }
-			setEvents[event].push(args.slice(1));
-
-			setEvent.clear = clear;
-
-			return setEvent;
-
-			function batchSet(events, args) {
-				var eI, result = true;
-				for(eI = 0; eI < events.length; eI += 1) {
-					args.unshift(events[eI]);
-					if(trigger.apply(this, args) === false) { result = false; }
-					args.shift();
-				}
-				return result;
-			}
-
-			function clear() {
-				if(setEvents[event]) {
-					setEvents[event].splice(setEvents[event].indexOf(args), 1);
-					if(setEvents[event].length < 1) {
-						delete setEvents[event];
+			binding = on('emitter.listener', function(_event, listeners) {
+				var lI;
+				if(event === _event) {
+					for(lI = 0; lI < listeners.length; lI += 1) {
+						if(args) { listeners[lI].apply(args); }
+						else { listeners[lI](a1, a2, a3, a4); }
 					}
 				}
+			});
+
+			if(!setEvents[event]) { setEvents[event] = []; };
+			setEvents[event].push(binding);
+
+			_clear = binding.clear;
+			binding.clear = clear;
+
+			return binding;
+
+			function clear() {
+				setEvents[event].splice(setEvents[event].indexOf(binding), 1);
+				_clear();
 			}
 		}
 
@@ -311,10 +292,17 @@
 		 * @param event
 		 */
 		function clearSet(event) {
+			var bI;
 			if(event) {
+				for(bI = 0; bI < setEvents[event].length; bI += 1) {
+					setEvents[event][bI].clear();
+				}
 				delete setEvents[event];
 			} else {
-				setEvents = {};
+				for(event in setEvents) {
+					if(!setEvents.hasOwnProperty(event)) { continue; }
+					clearSet(event);
+				}
 			}
 		}
 
@@ -489,8 +477,9 @@
 			trigger('emitter.clear');
 
 			listeners = {};
-			setEvents = {};
-			pipes = {};
+
+			clearSet();
+			clearPipes();
 
 			delete emitter.on;
 			delete emitter.once;
