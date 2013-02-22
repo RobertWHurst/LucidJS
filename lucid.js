@@ -317,7 +317,7 @@
 
 			if(typeof event === 'object' && typeof event.push === 'function' && typeof event[0] === 'string') {
 				for(eI = 0; eI < event.length; eI += 1) {
-					bindings.push(pipe.apply(null, [event[eI]].concat(args)));
+					bindings.push(pipe.apply(null, [event[eI]].concat(args.slice(1))));
 				}
 
 				api.clear = clearBatch;
