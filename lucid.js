@@ -315,6 +315,7 @@
 			var api = {}, args = Array.prototype.slice.apply(arguments), eI, aI, pI, connections = [], connection, bindings = [],
 			binding;
 
+			//a batch of events
 			if(typeof event === 'object' && typeof event.push === 'function' && typeof event[0] === 'string') {
 				for(eI = 0; eI < event.length; eI += 1) {
 					bindings.push(pipe.apply(null, [event[eI]].concat(args.slice(1))));
@@ -324,12 +325,25 @@
 				return api;
 			}
 
+			//a single emitter (all events)
+			if(typeof event === 'object') {
+				event = false;
+			}
 
-			if(typeof event === 'object' && typeof event.on === 'function') { event = false; } else { args.shift(); }
+			//a specific event
+			else {
+				args.shift();
+			}
+
+			//validate event
 			if(event !== false && typeof event !== 'string') { throw new Error('Cannot create pipe. The first argument must be an event string or an emitter.'); }
 
 			for(aI = 0; aI < args.length; aI += 1) {
 
+				//if dom node
+				if(args[aI].addEventListener || args[aI].attachEvent) { args[aI] = EventEmitter(args[aI]); }
+
+				//find existing pipe to emitter (if any)
 				for(pI = 0; pI < pipes.length; pI += 1) {
 					if(pipes[pI].emitter === args[aI]) {
 						connection = pipes[pI];
@@ -337,8 +351,10 @@
 					}
 				}
 
+				//if a pipe was found and its type 2 then skip this emitter (its already piped)
 				if(connection && connection.type === 2) { continue; }
 
+				//if no pipe exists then create it for the first time
 				if(!connection) {
 					connection = {};
 					connection.emitter = args[aI];

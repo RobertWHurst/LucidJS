@@ -491,7 +491,7 @@ emitter.set(array events, * arg[, ...]) => bool successful
 <a name="emitter-pipe"></a>
 ### emitter.pipe()
 	
-Pipes all events or select events from one or more emitters, into another. Any events emitted by the piped emitters will also be emitted by the emitter pipe was called on. This is extremely powerful and allows you to chain your emitters.
+Pipes all events or select events from one or more emitters, into another. Any events emitted by the piped emitters will also be emitted by the emitter pipe was called on. This is extremely powerful and allows you to chain your emitters. Note that you can also pass in DOM nodes as emitters.
 
 Returns a pipe object that can be used to clear the pipe.
 
