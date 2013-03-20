@@ -160,7 +160,7 @@
 		 * @return {Object}
 		 */
 		function once(event     ) {
-			var binding, args = Array.prototype.slice.apply(arguments, [1]), result = true;
+			var binding = {clear: clear}, args = Array.prototype.slice.apply(arguments, [1]), result = true;
 
 			binding = on(event, function(    ) {
 				var aI, eventArgs = Array.prototype.slice.apply(arguments);
