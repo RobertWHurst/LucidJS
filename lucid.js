@@ -176,6 +176,14 @@
 			});
 
 			return binding;
+
+			function clear() {
+				if(!listeners[event]) { return; }
+				for(aI = 0; aI < args.length; aI += 1) {
+					listeners[event].splice(listeners[event].indexOf(args[aI]), 1);
+				}
+				if(listeners[event].length < 1) { delete listeners[event]; }
+			}
 		}
 
 		/**
