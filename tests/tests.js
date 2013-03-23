@@ -95,6 +95,11 @@ test('emitter.set', function() {
 
 	equal(result, 'BlackWhite', "When multiple events are triggered, they should be fired in the correct order.");
 
+	emitter.set('event2');
+	emitter.once('event2', function() { result += 'Red'; });
+
+	equal(result, 'BlackWhiteRed', "When listening with once, events that have been set previously should still trigger");
+
 });
 
 test('emitter.pipe', function() {

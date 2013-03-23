@@ -160,7 +160,7 @@
 		 * @return {Object}
 		 */
 		function once(event     ) {
-			var binding, args = Array.prototype.slice.apply(arguments, [1]), result = true;
+			var binding = {clear: clear}, args = Array.prototype.slice.apply(arguments, [1]), result = true;
 
 			binding = on(event, function(    ) {
 				var aI, eventArgs = Array.prototype.slice.apply(arguments);
@@ -176,6 +176,14 @@
 			});
 
 			return binding;
+
+			function clear() {
+				if(!listeners[event]) { return; }
+				for(aI = 0; aI < args.length; aI += 1) {
+					listeners[event].splice(listeners[event].indexOf(args[aI]), 1);
+				}
+				if(listeners[event].length < 1) { delete listeners[event]; }
+			}
 		}
 
 		/**
