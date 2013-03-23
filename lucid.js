@@ -187,11 +187,11 @@
 
 		/**
 		 * Triggers events. Passes listeners any additional arguments.
-		 *  Optimized for 4 arguments.
+		 *  Optimized for 6 arguments.
 		 * @param event
 		 * @return {Boolean}
 		 */
-		function trigger(event, a1, a2, a3, a4, la) {
+		function trigger(event, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
 			var longArgs, lI, eventListeners, result = true;
 
 			if(typeof la !== 'undefined') {
@@ -202,7 +202,7 @@
 				if(longArgs) {
 					return batchTrigger.apply(null, arguments);
 				} else {
-					return batchTrigger(event, a1, a2, a3, a4);
+					return batchTrigger(event, a1, a2, a3, a4, a5, a6, a7, a8, a9);
 				}
 			}
 
@@ -214,7 +214,7 @@
 					if(longArgs) {
 						trigger.apply(this, [].concat('emitter.event', event.join('.'), longArgs));
 					} else {
-						trigger('emitter.event', a1, a2, a3, a4);
+						trigger('emitter.event', a1, a2, a3, a4, a5, a6, a7, a8, a9);
 					}
 				}
 
@@ -226,7 +226,7 @@
 								result = false;
 							}
 						} else {
-							if(eventListeners[lI](a1, a2, a3, a4) === false) {
+							if(eventListeners[lI](a1, a2, a3, a4, a5, a6, a7, a8, a9) === false) {
 								result = false;
 							}
 						}
@@ -240,11 +240,9 @@
 
 		/**
 		 * Triggers a batch of events. Passes listeners any additional arguments.
-		 *  Optimized for 4 arguments.
-		 * @param event
-		 * @return {Boolean}
+		 *  Optimized for 6 arguments.
 		 */
-		function batchTrigger(events, a1, a2, a3, a4, la) {
+		function batchTrigger(events, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
 			var longArgs, eI, result = true;
 
 			if(typeof la !== 'undefined') {
@@ -257,7 +255,7 @@
 					if(trigger.apply(this, args) === false) { result = false; }
 					args.shift();
 				} else {
-					if(trigger(events[eI], a1, a2, a3, a4) === false) { result = false; }
+					if(trigger(events[eI], a1, a2, a3, a4, a5, a6, a7, a8, a9) === false) { result = false; }
 				}
 
 			}
@@ -266,22 +264,21 @@
 
 		/**
 		 * Sets events. Passes listeners any additional arguments.
-		 * @param event
-		 * @return {*}
+		 *  Optimized for 6 arguments.
 		 */
-		function set(event, a1, a2, a3, a4, la) {
+		function set(event, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
 			var args, binding, _clear;
 
 			if(la) { args = Array.prototype.slice.apply(arguments, [1]); }
 			if(la) { trigger.apply(arguments) }
-			else { trigger(event, a1, a2, a3, a4); }
+			else { trigger(event, a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 
 			binding = on('emitter.listener', function(_event, listeners) {
 				var lI;
 				if(event === _event) {
 					for(lI = 0; lI < listeners.length; lI += 1) {
 						if(args) { listeners[lI].apply(args); }
-						else { listeners[lI](a1, a2, a3, a4); }
+						else { listeners[lI](a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 					}
 				}
 			});
