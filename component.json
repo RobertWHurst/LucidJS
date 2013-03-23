@@ -2,7 +2,7 @@
   "name": "lucid",
   "repo": "RobertWHurst/LucidJS",
   "description": "LucidJS is a chainable event emitter library. It offers several unique features such as set events, emitter piping, DOM node encapsulation, sub events, along with the usual event triggering and binding. LucidJS emitters also feature meta events that allow listening for event binding and event triggering. LucidJS works in both the browser and node.js.",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "keywords": ["Event Emitter"],
   "dependencies": {},
   "scripts": ["lucid.js"],

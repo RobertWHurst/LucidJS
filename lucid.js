@@ -210,7 +210,7 @@
 			while(event.length) {
 				eventListeners = listeners[event.join('.')];
 
-				if(event[0] !== 'emitter') {
+				if(event[0] !== 'emitter' && (listeners['emitter'] || listeners['emitter.event'])) {
 					if(longArgs) {
 						trigger.apply(this, [].concat('emitter.event', event.join('.'), longArgs));
 					} else {
@@ -236,26 +236,32 @@
 			}
 
 			return result;
+		}
 
-			function batchTrigger(events, a1, a2, a3, a4, la) {
-				var eI, result = true;
+		/**
+		 * Triggers a batch of events. Passes listeners any additional arguments.
+		 *  Optimized for 4 arguments.
+		 * @param event
+		 * @return {Boolean}
+		 */
+		function batchTrigger(events, a1, a2, a3, a4, la) {
+			var longArgs, eI, result = true;
 
-				if(typeof la !== 'undefined') {
-					longArgs = Array.prototype.slice.apply(arguments, [1]);
-				}
-
-				for(eI = 0; eI < events.length; eI += 1) {
-					if(longArgs) {
-						args.unshift(events[eI]);
-						if(trigger.apply(this, args) === false) { result = false; }
-						args.shift();
-					} else {
-						if(trigger(events[eI], a1, a2, a3, a4) === false) { result = false; }
-					}
-
-				}
-				return result;
+			if(typeof la !== 'undefined') {
+				longArgs = Array.prototype.slice.apply(arguments, [1]);
 			}
+
+			for(eI = 0; eI < events.length; eI += 1) {
+				if(longArgs) {
+					args.unshift(events[eI]);
+					if(trigger.apply(this, args) === false) { result = false; }
+					args.shift();
+				} else {
+					if(trigger(events[eI], a1, a2, a3, a4) === false) { result = false; }
+				}
+
+			}
+			return result;
 		}
 
 		/**
