@@ -137,7 +137,7 @@
 			var args = Array.prototype.slice.apply(arguments, [1]), aI, sI;
 
 			//recurse over a batch of events
-			if(typeof event === 'object' && typeof event.push === 'function') { 
+			if(typeof event === 'object' && typeof event.push === 'function') {
 				for(sI = 0; sI < event.length; sI += 1) {
 					off.apply(null, [event[sI]].concat(args));
 				}
@@ -160,11 +160,18 @@
 		 * @return {Object}
 		 */
 		function once(event     ) {
-			var binding, args = Array.prototype.slice.apply(arguments, [1]), result = true;
+			var binding, args = Array.prototype.slice.apply(arguments, [1]), result = true, cleared = false;
 
 			binding = on(event, function(    ) {
 				var aI, eventArgs = Array.prototype.slice.apply(arguments);
-				binding.clear();
+
+				if(!binding) {
+					if(cleared) { return; }
+					cleared = true;
+					setTimeout(function(){ binding.clear(); }, 0);
+				} else {
+					binding.clear();
+				}
 
 				for(aI = 0; aI < args.length; aI += 1) {
 					if(args[aI].apply(this, eventArgs) === false) {
