@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/RobertWHurst/LucidJS.png)](https://travis-ci.org/RobertWHurst/LucidJS)
-[![endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
 
 #LucidJS
+
+[![Build Status](https://travis-ci.org/RobertWHurst/LucidJS.png)](https://travis-ci.org/RobertWHurst/LucidJS)
+[![endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
 
 #### Navigation
 * [Set Events](#set-events)
