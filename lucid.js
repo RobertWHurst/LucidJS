@@ -77,14 +77,17 @@
 		 * @return {Object}
 		 */
 		function on(event     ) {
-			var args = Array.prototype.slice.apply(arguments, [1]), binding = {}, aI, sI;
+			var args, binding = {}, aI, sI;
+			args = Array.prototype.slice.apply(arguments, [1]);
 
 			//recurse over a batch of events
 			if(typeof event === 'object' && typeof event.push === 'function') { return batchOn(event, args); }
 
 			//trigger the listener event
-			if(event.slice(0, 7) !== 'emitter') {
-				trigger('emitter.listener', event, args);
+			if(event.slice(0, 7) !== 'emitter' && (listeners['emitter'] || listeners['emitter.listener'])) {
+				for(aI = 0; aI < args.length; aI += 1) {
+					trigger('emitter.listener', event, args[aI]);
+				}
 			}
 
 			//create the event
@@ -214,7 +217,7 @@
 					if(longArgs) {
 						trigger.apply(this, [].concat('emitter.event', event.join('.'), longArgs));
 					} else {
-						trigger('emitter.event', a1, a2, a3, a4, a5, a6, a7, a8, a9);
+						trigger('emitter.event', event.join('.'), a1, a2, a3, a4, a5, a6, a7, a8, a9);
 					}
 				}
 
@@ -270,20 +273,24 @@
 			var args, binding, _clear;
 
 			if(la) { args = Array.prototype.slice.apply(arguments, [1]); }
-			if(la) { trigger.apply(arguments) }
+
+			if(typeof event === 'object' && event.push) {
+				if(args) { return batchSet.apply(null, args); }
+				else { return batchSet(event, a1, a2, a3, a4, a5, a6, a7, a8, a9); }
+			}
+
+			if(args) { trigger.apply(null, arguments); }
 			else { trigger(event, a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 
-			binding = on('emitter.listener', function(_event, listeners) {
+			binding = on('emitter.listener', function(_event, listener) {
 				var lI;
 				if(event === _event) {
-					for(lI = 0; lI < listeners.length; lI += 1) {
-						if(args) { listeners[lI].apply(args); }
-						else { listeners[lI](a1, a2, a3, a4, a5, a6, a7, a8, a9); }
-					}
+					if(args) { listener.apply(null, args); }
+					else { listener(a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 				}
 			});
 
-			if(!setEvents[event]) { setEvents[event] = []; };
+			if(!setEvents[event]) { setEvents[event] = []; }
 			setEvents[event].push(binding);
 
 			_clear = binding.clear;
@@ -294,6 +301,27 @@
 			function clear() {
 				setEvents[event].splice(setEvents[event].indexOf(binding), 1);
 				_clear();
+			}
+		}
+
+		function batchSet(events, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
+			var args, eI, bindings = [];
+
+			if(la) { args = Array.prototype.slice.apply(arguments, [1]); }
+
+			for(eI = 0; eI < events.length; eI += 1) {
+				if(args) {
+					bindings.push(set.apply(null, [events[eI]].concat(args)));
+				} else {
+					bindings.push(set(events[eI], a1, a2, a3, a4, a5, a6, a7, a8, a9));
+				}
+			}
+
+			function clear() {
+				var bI;
+				for(bI = 0; bI < bindings.length; bI += 1) {
+					bindings[bI].clear();
+				}
 			}
 		}
 
@@ -370,11 +398,8 @@
 					connection.emitter = args[aI];
 					connection.bindings = [];
 					connection.events = [];
-					if(event) {
-						connection.type = 1;
-					} else {
-						connection.type = 2;
-					}
+					if(event) { connection.type = 1; }
+					else { connection.type = 2; }
 				}
 
 				if(connection.events.indexOf(event) !== -1) { continue; }
@@ -500,7 +525,9 @@
 		 */
 		function clear() {
 
-			trigger('emitter.clear');
+			if(listeners['emitter'] || listeners['emitter.clear']) {
+				trigger('emitter.clear');
+			}
 
 			listeners = {};
 
@@ -588,5 +615,4 @@
 			}
 		}
 	}
-
 });

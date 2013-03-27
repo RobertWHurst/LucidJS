@@ -42,7 +42,7 @@ setTimeout(function() {
 
 >>> fired ready event
 >>> listener bound and executed after ready event
-```	
+```
 Set is extremely useful for events that only happen once and indicate state. Its the perfect solution for `load`, `complete` or `ready` events.
 
 <a name="emitter-piping"></a>
@@ -65,7 +65,7 @@ centralEmitter.pipe(['bar', 'baz'], emitterB);
 //pipe all events from emitter C
 centralEmitter.pipe(emitterC);
 ```
-	
+
 <a name="dom-node-augmentation"></a>
 ###DOM Node Augmentation
 
@@ -100,7 +100,7 @@ emitter.trigger('foo.bar.baz');
 >>> 'foo.bar'
 >>> 'foo'
 ```
-	
+
 <a name="simple-events"></a>
 ###Simple Events
 
@@ -123,14 +123,12 @@ LucidJS each emitter also emits a set of meta events that let you listen for new
 
 ```javascript
 var emitter = LucidJS.emitter();
-emitter.on('emitter.listener', function(event, listeners) {
-	console.log('captured listeners', listeners, 'on event ' + event);
+emitter.on('emitter.listener', function(event, listener) {
+	console.log('captured listener', listener, 'on event ' + event);
 });
 emitter.on('foo', function() { console.log('bar'); });
 
->>> 'captured listeners' [
-		function() { console.log('bar'); }
-	] 'on event foo'
+>>> 'captured listeners' function() { console.log('bar'); } 'on event foo'
 ```
 
 You can event listen to all of the events emitted by an emitter.
@@ -144,14 +142,14 @@ emitter.trigger('foo');
 
 >>> 'captured event foo'
 ```
-	
+
 <a name="documentation"></a>
 ##Documentation
 
 <a name="emitter"></a>
 ### LucidJS.emitter()
 
-	
+
 Creates an event emitter and returns it. If an object is passed in the object is augmented with emitter methods. If a DOM node is passed in it will also be augmented, however any DOM events emitted by the node will also be emitted by the emitter.
 
 #### Arguments
@@ -221,7 +219,7 @@ The binding object is returned by `emitter.on`, `emitter.once`, `emitter.set`, a
 
 <a name="emitter-on"></a>
 ### emitter.on()
-	
+
 Binds any number of listener callbacks to an event or an array of events. Whenever the given event or events are triggered or set on emitter, the listener callbacks will be executed. Any arguments passed to `trigger()` after the event will be passed into the listener callbacks on execution.
 
 If any of the listener callbacks return `false`, the `emitter.trigger` or `emitter.set` that fired the event will return false.
@@ -490,7 +488,7 @@ emitter.set(array events, * arg[, ...]) => bool successful
 
 <a name="emitter-pipe"></a>
 ### emitter.pipe()
-	
+
 Pipes all events or select events from one or more emitters, into another. Any events emitted by the piped emitters will also be emitted by the emitter pipe was called on. This is extremely powerful and allows you to chain your emitters. Note that you can also pass in DOM nodes as emitters.
 
 Returns a pipe object that can be used to clear the pipe.
@@ -569,7 +567,7 @@ emitter.pipe(array events, object emitter[, ...]) => object pipe
 
 <a name="emitter-pipe-clear"></a>
 ### emitter.pipe.clear()
-	
+
 Allows clearing all pipes, or pipes that transport select events. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.
 
 #### Arguments
@@ -596,7 +594,7 @@ emitter.pipe.clear(string event)
 
 <a name="emitter-listeners"></a>
 ### emitter.listeners()
-	
+
 Allows access to the emitter's bound event listeners.
 
 If an event name is given, the array of listeners bound to the named event will be returned. If no event name is given then the events will be returned. The events object contains all event arrays.
@@ -627,7 +625,7 @@ emitter.listeners([string event]) => object eventlisteners
 
 <a name="emitter-listeners-clear"></a>
 ### emitter.listeners.clear()
-	
+
 Clears listeners bound to the emitter. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.
 
 #### Arguments
