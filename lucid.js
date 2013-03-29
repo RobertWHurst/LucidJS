@@ -131,6 +131,7 @@
 				}
 			}
 		}
+
 		/**
 		 * Unbinds listeners to events.
 		 * @param event
@@ -279,16 +280,17 @@
 				else { return batchSet(event, a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 			}
 
-			if(args) { trigger.apply(null, arguments); }
-			else { trigger(event, a1, a2, a3, a4, a5, a6, a7, a8, a9); }
-
-			binding = on('emitter.listener', function(_event, listener) {
+			binding = on(['emitter.listener', 'pipe.listener'], function(_event, listener) {
 				var lI;
+
 				if(event === _event) {
 					if(args) { listener.apply(null, args); }
 					else { listener(a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 				}
 			});
+
+			if(args) { trigger.apply(null, arguments); }
+			else { trigger(event, a1, a2, a3, a4, a5, a6, a7, a8, a9); }
 
 			if(!setEvents[event]) { setEvents[event] = []; }
 			setEvents[event].push(binding);
@@ -299,13 +301,14 @@
 			return binding;
 
 			function clear() {
+				trigger('emitter.unset', event);
 				setEvents[event].splice(setEvents[event].indexOf(binding), 1);
 				_clear();
 			}
 		}
 
 		function batchSet(events, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
-			var args, eI, bindings = [];
+			var binding = {}, args, eI, bindings = [];
 
 			if(la) { args = Array.prototype.slice.apply(arguments, [1]); }
 
@@ -316,6 +319,9 @@
 					bindings.push(set(events[eI], a1, a2, a3, a4, a5, a6, a7, a8, a9));
 				}
 			}
+
+			binding.clear = clear;
+			return binding;
 
 			function clear() {
 				var bI;
@@ -350,120 +356,71 @@
 		 * @return {Object}
 		 */
 		function pipe(event    ) {
-			var api = {}, args = Array.prototype.slice.apply(arguments), eI, aI, pI, connections = [], connection, bindings = [],
-			binding;
+			var binding = {}, emitters, eI, emitter, bindings = [],
+			setEvents = [], eventCaptures = [], sendListeners = [];
 
-			//a batch of events
-			if(typeof event === 'object' && typeof event.push === 'function' && typeof event[0] === 'string') {
-				for(eI = 0; eI < event.length; eI += 1) {
-					bindings.push(pipe.apply(null, [event[eI]].concat(args.slice(1))));
-				}
+			emitters = Array.prototype.slice.apply(arguments, [1]);
 
-				api.clear = clearBatch;
-				return api;
-			}
-
-			//a single emitter (all events)
 			if(typeof event === 'object') {
-				event = false;
+				if(event.on) { emitters.unshift(event); event = false; }
+				else { return batchPipe.apply(null, arguments); }
 			}
 
-			//a specific event
-			else {
-				args.shift();
+			for(eI = 0; eI < emitters.length; eI += 1) {
+				emitter = emitters[eI];
+				eventCaptures.push(emitter.on('emitter.event', captureEvent));
+				sendListeners.push(on('emitter.listener', sendListener));
 			}
 
-			//validate event
-			if(event !== false && typeof event !== 'string') { throw new Error('Cannot create pipe. The first argument must be an event string or an emitter.'); }
+			binding.clear = clear;
+			return binding;
 
-			for(aI = 0; aI < args.length; aI += 1) {
-
-				//if dom node
-				if(args[aI].addEventListener || args[aI].attachEvent) { args[aI] = EventEmitter(args[aI]); }
-
-				//find existing pipe to emitter (if any)
-				for(pI = 0; pI < pipes.length; pI += 1) {
-					if(pipes[pI].emitter === args[aI]) {
-						connection = pipes[pI];
-						break;
-					}
+			function captureEvent(event     ) {
+				var setEvent = false, args;
+				args = Array.prototype.slice.apply(arguments, [1]);
+				emitter.once(event, function() { setEvent = true; });
+				if(event.substr(0, 4) !== 'pipe' && (listeners['pipe'] || listeners['pipe.event'])) {
+					trigger('pipe.event', event, args);
 				}
-
-				//if a pipe was found and its type 2 then skip this emitter (its already piped)
-				if(connection && connection.type === 2) { continue; }
-
-				//if no pipe exists then create it for the first time
-				if(!connection) {
-					connection = {};
-					connection.emitter = args[aI];
-					connection.bindings = [];
-					connection.events = [];
-					if(event) { connection.type = 1; }
-					else { connection.type = 2; }
-				}
-
-				if(connection.events.indexOf(event) !== -1) { continue; }
-				connection.events.push(event);
-
-				if(connection.type === 1) {
-					binding = captureEvent(args[aI], event);
-					binding.event = event;
-					connection.bindings.push(binding);
-				} else if(connection.type === 2) {
-					for(event in listeners) {
-						if(!listeners.hasOwnProperty(event)) { continue; }
-						binding = args[aI].on(event, captureEvent);
-						binding.event = event;
-						connection.bindings.push(binding);
-						connection.events.push(event);
-					}
-					captureListener(connection, args[aI]);
-				}
-
-				connections.push(connection);
-				pipes.push(connection);
+				if(setEvent) { setEvents.push(set.apply(null, [event].concat(args))); }
+				else { trigger.apply(null, [event].concat(args)); }
 			}
 
-			api.clear = clear;
-			return api;
-
-			function captureListener(connection, emitter) {
-				connection.listenerBinding = on('emitter.listener', function(event) {
-					if(connection.events.indexOf(event) === -1) {
-						connection.bindings.push(captureEvent(emitter, event));
-						connection.events.push(event);
-					}
-				});
-			}
-
-			function captureEvent(emitter, event) {
-				return emitter.on(event, function(    ) {
-					var args = Array.prototype.slice.apply(arguments);
-					args.unshift(event);
-					return trigger.apply(this, args);
-				});
-			}
-
-			function clearBatch() {
-				if(bindings.length) {
-					while(bindings.length) {
-						bindings[0].clear();
-						bindings.splice(0, 1);
-					}
-				}
+			function sendListener(event, listener) {
+				emitter.trigger('pipe.listener', event, listener);
 			}
 
 			function clear() {
-				while(connections.length) {
-					if(connections[0].listenerBinding) {
-						connections[0].listenerBinding.clear();
-					}
-					while(connections[0].bindings.length) {
-						connections[0].bindings[0].clear();
-						connections[0].bindings.splice(0, 1);
-					}
-					pipes.splice(pipes.indexOf(connections[0]), 1);
-					connections.splice(0, 1);
+				var bI, sI, eI, sII;
+				for(bI = 0; bI < bindings.length; bI += 1) {
+					bindings[bI].clear();
+				}
+				for(sI = 0; sI < bindings.length; sI += 1) {
+					setEvents[sI].clear();
+				}
+				for(eI = 0; eI < eventListeners.length; eI += 1) {
+					bindings[eI].clear();
+				}
+				for(sII = 0; sII < sendListeners.length; sII += 1) {
+					setEvents[sII].clear();
+				}
+			}
+		}
+
+		function batchPipe(events    ) {
+			var binding = {}, eI, bindings = [], emitters;
+			emitters = Array.prototype.slice.apply(arguments, [1]);
+			for(eI = 0; eI < events.length; eI += 1) {
+				bindings.push(pipe.apply(null, [events[eI]].concat(emitters)));
+			}
+
+			binding.clear = clear;
+			return binding;
+
+			function clear() {
+				var bI;
+				for(bI = 0; bI < bindings.length; bI += 1) {
+					bindings[bI].clear();
 				}
 			}
 		}
