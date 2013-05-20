@@ -337,12 +337,12 @@
 		 */
 		function clearSet(event) {
 			var bI;
-			if(event) {
+			if(event && setEvents[event]) {
 				for(bI = 0; bI < setEvents[event].length; bI += 1) {
 					setEvents[event][bI].clear();
 				}
 				delete setEvents[event];
-			} else {
+			} else if (!event) {
 				for(event in setEvents) {
 					if(!setEvents.hasOwnProperty(event)) { continue; }
 					clearSet(event);
