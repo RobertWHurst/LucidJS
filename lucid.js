@@ -233,6 +233,10 @@
 		 */
 		function triggerOnly(event, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
 			var longArgs, lI, eventListeners = listeners[event], result = true;
+			
+			if(typeof la !== 'undefined') {
+				longArgs = Array.prototype.slice.apply(arguments, [1]);
+			}
 
 			if(event.substr(0,7) !== 'emitter' && (listeners['emitter'] || listeners['emitter.event'])) {
 				if(longArgs) {
