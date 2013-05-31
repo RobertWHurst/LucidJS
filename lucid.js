@@ -212,33 +212,50 @@
 
 			event = event.split('.');
 			while(event.length) {
-				eventListeners = listeners[event.join('.')];
-
-				if(event[0] !== 'emitter' && (listeners['emitter'] || listeners['emitter.event'])) {
-					if(longArgs) {
-						trigger.apply(this, [].concat('emitter.event', event.join('.'), longArgs));
-					} else {
-						trigger('emitter.event', event.join('.'), a1, a2, a3, a4, a5, a6, a7, a8, a9);
+				if(longArgs){
+					if(triggerOnly.apply(this, [event.join('.')].concat(longArgs)) === false){
+						result = false;
+					}
+				} else {
+					if(triggerOnly(event.join('.'), a1, a2, a3, a4, a5, a6, a7, a8, a9) === false){
+						result = false;
 					}
 				}
-
-				if(eventListeners) {
-					eventListeners = [].concat(eventListeners);
-					for(lI = 0; lI < eventListeners.length; lI += 1) {
-						if(longArgs) {
-							if(eventListeners[lI].apply(this, longArgs) === false) {
-								result = false;
-							}
-						} else {
-							if(eventListeners[lI](a1, a2, a3, a4, a5, a6, a7, a8, a9) === false) {
-								result = false;
-							}
-						}
-					}
-				}
+				
 				event.pop();
 			}
 
+			return result;
+		}
+
+		/**
+		 * Private method, triggers the event without triggering any subevents
+		 */
+		function triggerOnly(event, a1, a2, a3, a4, a5, a6, a7, a8, a9, la) {
+			var longArgs, lI, eventListeners = listeners[event], result = true;
+
+			if(event.substr(0,7) !== 'emitter' && (listeners['emitter'] || listeners['emitter.event'])) {
+				if(longArgs) {
+					trigger.apply(this, [].concat('emitter.event', event, longArgs));
+				} else {
+					trigger('emitter.event', event, a1, a2, a3, a4, a5, a6, a7, a8, a9);
+				}
+			}
+
+			if(eventListeners) {
+				eventListeners = [].concat(eventListeners);
+				for(lI = 0; lI < eventListeners.length; lI += 1) {
+					if(longArgs) {
+						if(eventListeners[lI].apply(this, longArgs) === false) {
+							result = false;
+						}
+					} else {
+						if(eventListeners[lI](a1, a2, a3, a4, a5, a6, a7, a8, a9) === false) {
+							result = false;
+						}
+					}
+				}
+			}
 			return result;
 		}
 
@@ -383,7 +400,7 @@
 					trigger('pipe.event', event, args);
 				}
 				if(setEvent) { setEvents.push(set.apply(null, [event].concat(args))); }
-				else { trigger.apply(null, [event].concat(args)); }
+				else { triggerOnly.apply(null, [event].concat(args)); }
 			}
 
 			function sendListener(event, listener) {
