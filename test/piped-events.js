@@ -80,6 +80,30 @@ describe('Emitter', function() {
 			a.on('bar', exec);
 			function exec() { i += 1; if(i === 2) { done(); } }
 		});
+		it('should trigger the subevents only once per emitter', function(done){
+    	var a = LucidJS.emitter()
+    		, b = LucidJS.emitter()
+    		, aCount = 0
+    		, bCount = 0
+
+			 a.on('emitter.event', function(name){
+			    aCount += 1;
+			 })
+
+			 b.on('emitter.event', function(name){
+			    bCount += 1
+			 })
+
+			 a.pipe(b)
+			 b.trigger('foo.bar.baz')
+			 setTimeout(function(){
+			 	if(aCount == 3 && bCount == 3){
+			 		done()
+			 	} else {
+			 		done(new Error('failed to trigger subevents correctly on parent emitter'))
+			 	}
+			 }, 0)
+		})
 	});
 });
 
