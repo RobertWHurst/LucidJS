@@ -561,7 +561,8 @@
 					args.unshift([event, 'dom.' + event]);
 					if(trigger.apply(this, args) === false) {
 						eventObj.preventDefault();
-						eventObj.stopPropagation();
+						eventObj.stopPropagation && eventObj.stopPropagation();
+						eventObj.cancelBubble = true
 					}
 				}
 			});
