@@ -1,6 +1,8 @@
 #LucidJS
 
 [![Build Status](https://travis-ci.org/RobertWHurst/LucidJS.png?branch=master)](https://travis-ci.org/RobertWHurst/LucidJS)
+[![NPM version](https://badge.fury.io/js/lucidjs.png)](http://badge.fury.io/js/lucidjs)
+
 [![Endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
 [![Flattr This](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1270541/RobertWHurstLucidJS-on-GitHub)
 
