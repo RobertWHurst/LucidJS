@@ -9,7 +9,7 @@
 	"keywords": [
 		"Event Emitter"
 	],
-	"maintainers": [
+	"author": [
 		{
 			"name": "Robert Hurst",
 			"email": "RobertWHurst@Gmail.com",
@@ -19,18 +19,13 @@
 	"bugs": {
 		"web": "https://github.com/RobertWHurst/LucidJS/issues"
 	},
-	"repositories": [
+	"repository": [
 		{
 			"type": "git",
-			"url": "git@github.com:RobertWHurst/LucidJS.git"
+			"url": "http://github.com/RobertWHurst/LucidJS.git"
 		}
 	],
-	"licenses": [
-		{
-			"name": "BSD License",
-			"url": "https://raw.github.com/RobertWHurst/LucidJS/master/license.txt"
-		}
-	],
+	"license": "BSD",
 	"devDependencies": {
 		"mocha": "1.8.x"
 	},
