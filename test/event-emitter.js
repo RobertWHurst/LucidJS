@@ -3,10 +3,6 @@ var should = require('should');
 var EventEmitter = require('../lib/event-emitter');
 
 
-describe('eventEmitter', function() {
-
-});
-
 describe('eventEmitter.emit()', function(done) {
 
   it('emits an event on listeners bound to it', function(done) {
@@ -214,6 +210,21 @@ describe('eventEmitter.bind()', function() {
       });
   });
 
+  it('triggers emitter.bind event', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.bind'] = [function() { done(); }];
+    eventEmitter.bind('foo');
+  });
+
+  it('sets .event to the source event for emitter.bind event', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.bind'] = [function() {
+      this.event.should.equal('foo');
+      done();
+    }];
+    eventEmitter.bind('foo');
+  });
+
   it('returns the eventEmitter', function() {
     var eventEmitter = new EventEmitter();
     eventEmitter.bind('foo', function() {}).should.equal(eventEmitter);
@@ -221,13 +232,14 @@ describe('eventEmitter.bind()', function() {
 });
 
 
-describe('eventEmitter.addEventListener()', function() {
+describe('eventEmitter.addListener()', function() {
 
   it('is an alias for eventEmitter.bind()', function() {
     var eventEmitter = new EventEmitter();
-    eventEmitter.addEventListener.should.equal(eventEmitter.bind);
+    eventEmitter.addListener.should.equal(eventEmitter.bind);
   });
 });
+
 
 describe('eventEmitter.on()', function() {
 
@@ -236,6 +248,7 @@ describe('eventEmitter.on()', function() {
     eventEmitter.on.should.equal(eventEmitter.bind);
   });
 });
+
 
 describe('eventEmitter.unbind()', function() {
 
@@ -265,15 +278,23 @@ describe('eventEmitter.unbind()', function() {
     eventEmitter.unbind('fooAndBar', [foo, bar]);
     eventEmitter._listeners.fooAndBar.length.should.equal(0);
   });
+
+  it('returns the eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners.foo = [function() {}];
+    eventEmitter.unbind('foo').should.equal(eventEmitter);
+  });
 });
 
-describe('eventEmitter.removeEventListener()', function() {
+
+describe('eventEmitter.removeListener()', function() {
 
   it('is an alias for eventEmitter.unbind()', function() {
     var eventEmitter = new EventEmitter();
-    eventEmitter.removeEventListener.should.equal(eventEmitter.unbind);
+    eventEmitter.removeListener.should.equal(eventEmitter.unbind);
   });
 });
+
 
 describe('eventEmitter.off()', function() {
 
@@ -282,6 +303,60 @@ describe('eventEmitter.off()', function() {
     eventEmitter.off.should.equal(eventEmitter.unbind);
   });
 });
+
+
+describe('eventEmitter.unbindAll()', function() {
+
+  it('unbinds all listeners', function() {
+    var eventEmitter = new EventEmitter();
+    var foo = function() {};
+    var bar = function() {};
+    eventEmitter._listeners.foo = [foo];
+    eventEmitter._listeners.bar = [bar];
+    eventEmitter.unbindAll();
+    eventEmitter._listeners.foo.length.should.equal(0);
+    eventEmitter._listeners.bar.length.should.equal(0);
+  });
+
+  it('unbinds all listeners from an event', function() {
+    var eventEmitter = new EventEmitter();
+    var foo = function() {};
+    var bar = function() {};
+    eventEmitter._listeners.foo = [foo];
+    eventEmitter._listeners.bar = [bar];
+    eventEmitter.unbindAll('foo');
+    eventEmitter._listeners.foo.length.should.equal(0);
+    eventEmitter._listeners.bar[0].should.equal(bar);
+  });
+
+  it('unbinds all listeners from an array events', function() {
+    var eventEmitter = new EventEmitter();
+    var foo = function() {};
+    var bar = function() {};
+    var baz = function() {};
+    eventEmitter._listeners.foo = [foo];
+    eventEmitter._listeners.bar = [bar];
+    eventEmitter._listeners.baz = [baz];
+    eventEmitter.unbindAll(['foo', 'bar']);
+    eventEmitter._listeners.foo.length.should.equal(0);
+    eventEmitter._listeners.bar.length.should.equal(0);
+    eventEmitter._listeners.baz[0].should.equal(baz);
+  });
+
+  it('returns the eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    eventEmitter.unbindAll().should.equal(eventEmitter);
+  });
+});
+
+
+describe('eventEmitter.removeAllListeners()', function() {
+  it('is an alias of eventEmitter.unbindAll()', function() {
+    var eventEmitter = new EventEmitter();
+    eventEmitter.removeAllListeners.should.equal(eventEmitter.unbindAll);
+  });
+});
+
 
 describe('eventEmitter.flag()', function() {
 
@@ -336,29 +411,205 @@ describe('eventEmitter.unFlag()', function() {
   });
 });
 
-describe('`emitter.event`', function() {
 
-  it('caused by emiting events', function(done) {
+describe('eventEmitter.pipe()', function() {
+
+  it('pipes an eventEmitter', function() {
     var eventEmitter = new EventEmitter();
-    eventEmitter._listeners['emitter.event'] = [function() { done(); }];
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter.pipe(pipedEventEmitter);
+    eventEmitter._eventEmitters[0].should.equal(pipedEventEmitter);
+  });
+
+  it('pipes an array of eventEmitters', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitterA = new EventEmitter();
+    var pipedEventEmitterB = new EventEmitter();
+    eventEmitter.pipe([pipedEventEmitterA, pipedEventEmitterB]);
+    eventEmitter._eventEmitters[0].should.equal(pipedEventEmitterA);
+    eventEmitter._eventEmitters[1].should.equal(pipedEventEmitterB);
+  });
+
+  it('pipes an event to an eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter.pipe('foo', pipedEventEmitter);
+    eventEmitter._eventEmitters.foo[0].should.equal(pipedEventEmitter);
+  });
+
+  it('pipes an array events to an eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter.pipe(['foo', 'bar'], pipedEventEmitter);
+    eventEmitter._eventEmitters.foo[0].should.equal(pipedEventEmitter);
+    eventEmitter._eventEmitters.bar[0].should.equal(pipedEventEmitter);
+  });
+
+  it('returns the eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter.pipe(pipedEventEmitter).should.equal(eventEmitter);
+  });
+});
+
+
+describe('eventEmitter.unpipe()', function() {
+
+  it('unpipes an eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter._eventEmitters = [pipedEventEmitter];
+    eventEmitter.unpipe(pipedEventEmitter);
+    eventEmitter._eventEmitters.length.should.equal(0);
+  });
+
+  it('unpipes an eventEmitter from an event', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter._eventEmitters.foo = [pipedEventEmitter];
+    eventEmitter.unpipe('foo', pipedEventEmitter);
+    eventEmitter._eventEmitters.foo.length.should.equal(0);
+  });
+
+  it('unpipes an eventEmitter from an array of events', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter._eventEmitters.foo = [pipedEventEmitter];
+    eventEmitter._eventEmitters.bar = [pipedEventEmitter];
+    eventEmitter.unpipe(['foo', 'bar'], pipedEventEmitter);
+    eventEmitter._eventEmitters.foo.length.should.equal(0);
+    eventEmitter._eventEmitters.bar.length.should.equal(0);
+  });
+
+  it('returns the eventEmitter', function() {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter._eventEmitters = [pipedEventEmitter];
+    eventEmitter.unpipe(pipedEventEmitter).should.equal(eventEmitter);
+  });
+});
+
+
+describe('eventEmitter.listeners()', function() {
+
+  it('returns the ._listeners object', function() {
+    var eventEmitter = new EventEmitter();
+    eventEmitter.listeners().should.equal(eventEmitter._listeners);
+  });
+
+  it('returns the array of listeners for a given event', function() {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners.foo = [];
+    eventEmitter.listeners('foo').should.equal(eventEmitter._listeners.foo);
+  });
+});
+
+
+describe('event `emitter.emit`', function() {
+  
+  it('is triggered by .emit()', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.emit'] = [function() { done(); }];
     eventEmitter.emit('foo');
   });
 
-  it('sets .event to the source event', function(done) {
+  it('is passed the source event', function(done) {
     var eventEmitter = new EventEmitter();
-    eventEmitter._listeners['emitter.event'] = [function() {
+    eventEmitter._listeners['emitter.emit'] = [function(event) {
+      event.should.equal('foo');
+      done();
+    }];
+    eventEmitter.emit('foo');
+  });
+
+  it('.event is set to the source event', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.emit'] = [function() {
       this.event.should.equal('foo');
       done();
     }];
     eventEmitter.emit('foo');
   });
 
-  it('passes listeners arguements from the source event', function(done) {
+  it('is passed the event arguements from the source event', function(done) {
     var eventEmitter = new EventEmitter();
-    eventEmitter._listeners['emitter.event'] = [function(bar) {
+    eventEmitter._listeners['emitter.emit'] = [function(event, bar) {
       bar.should.equal('bar');
       done();
     }];
     eventEmitter.emit('foo', 'bar');
+  });
+});
+
+
+describe('event `emitter.bind`', function() {
+
+  it('is triggered by .bind()', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.bind'] = [function() { done(); }];
+    eventEmitter.bind('foo', function() {});
+  });
+});
+
+
+describe('event `emitter.unbind`', function() {
+
+  it('is triggered by .unbind()', function(done) {
+    var eventEmitter = new EventEmitter();
+    var foo = function() {};
+    eventEmitter._listeners.foo = [foo];
+    eventEmitter._listeners['emitter.unbind'] = [function() { done(); }];
+    eventEmitter.unbind('foo', foo);
+  });
+
+  it('is triggered by .unbindAll()', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners.foo = [function() {}];
+    eventEmitter._listeners['emitter.unbind'] = [function() { done(); }];
+    eventEmitter.unbindAll('foo');
+  });
+});
+
+
+describe('event `emitter.flag`', function() {
+
+  it('is triggered by .flag()', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.flag'] = [function() { done(); }];
+    eventEmitter.flag('foo');
+  });
+});
+
+
+describe('event `emitter.unflag`', function() {
+
+  it('is triggered by .unflag()', function(done) {
+    var eventEmitter = new EventEmitter();
+    eventEmitter._flags.foo = [];
+    eventEmitter._listeners['emitter.unflag'] = [function() { done(); }];
+    eventEmitter.unflag('foo');
+  });
+});
+
+
+describe('event `emitter.pipe`', function() {
+
+  it('is triggered by .pipe()', function(done) {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter._listeners['emitter.pipe'] = [function() { done(); }];
+    eventEmitter.pipe(pipedEventEmitter);
+  });
+});
+
+
+describe('event `emitter.unpipe`', function() {
+
+  it('is triggered by .unpipe()', function(done) {
+    var eventEmitter = new EventEmitter();
+    var pipedEventEmitter = new EventEmitter();
+    eventEmitter._eventEmitters = [pipedEventEmitter];
+    eventEmitter._listeners['emitter.unpipe'] = [function() { done(); }];
+    eventEmitter.unpipe(pipedEventEmitter);
   });
 });

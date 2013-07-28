@@ -2,7 +2,7 @@
 	"name": "lucidjs",
 	"description": "LucidJS is an uber simple and easy to use event emitter library. Lucid allows you to create your own event system and even pipe in events from any number of DOM elements.",
 	"version": "3.0.0",
-	"main": "./lucid.js",
+	"main": "./lib/lucid.js",
 	"scripts": {
 		"test": "make test"
 	},
@@ -20,6 +20,7 @@
 	"license": "BSD",
 	"devDependencies": {
 		"mocha": "~1.12.0",
-		"should": "~1.2.2"
+		"should": "~1.2.2",
+		"browserify": "~2.25.1"
 	}
 }
