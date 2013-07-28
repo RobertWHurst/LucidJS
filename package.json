@@ -1,24 +1,16 @@
 {
 	"name": "lucidjs",
 	"description": "LucidJS is an uber simple and easy to use event emitter library. Lucid allows you to create your own event system and even pipe in events from any number of DOM elements.",
-	"version": "2.7.0",
+	"version": "3.0.0",
 	"main": "./lucid.js",
 	"scripts": {
-		"test": "./node_modules/.bin/mocha"
+		"test": "make test"
 	},
 	"keywords": [
 		"Event Emitter"
 	],
-	"author": [
-		{
-			"name": "Robert Hurst",
-			"email": "RobertWHurst@Gmail.com",
-			"web": "http://github.com/RobertWHurst"
-		}
-	],
-	"bugs": {
-		"web": "https://github.com/RobertWHurst/LucidJS/issues"
-	},
+	"author": "Robert Hurst<robertwhurst@gmail.com>",
+	"bugs": "https://github.com/RobertWHurst/LucidJS/issues",
 	"repository": [
 		{
 			"type": "git",
@@ -27,7 +19,7 @@
 	],
 	"license": "BSD",
 	"devDependencies": {
-		"mocha": "1.8.x"
-	},
-	"homepage": "http://robertwhurst.github.com/LucidJS/"
+		"mocha": "~1.12.0",
+		"should": "~1.2.2"
+	}
 }
