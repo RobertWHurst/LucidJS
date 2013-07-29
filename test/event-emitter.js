@@ -131,6 +131,17 @@ describe('eventEmitter.emit()', function(done) {
     eventEmitter.emit('bar');
   });
 
+  it('throws error on error event if no listeners are bound', function() {
+    var eventEmitter = new EventEmitter();
+    (function() {
+      eventEmitter.emit('error');
+    }).should.throw();
+    (function() {
+      eventEmitter._listeners.error = [function() {}];
+      eventEmitter.emit('error');
+    }).should.not.throw();
+  });
+
   it('returns the eventEmitter', function() {
     var eventEmitter = new EventEmitter();
     eventEmitter.emit('foo').should.equal(eventEmitter);
@@ -246,6 +257,30 @@ describe('eventEmitter.on()', function() {
   it('is an alias for eventEmitter.bind()', function() {
     var eventEmitter = new EventEmitter();
     eventEmitter.on.should.equal(eventEmitter.bind);
+  });
+});
+
+
+describe('eventEmitter.weakBind()', function() {
+
+  it('unbinds itself after firing once', function() {
+    var eventEmitter = new EventEmitter();
+    var i = 0;
+    eventEmitter.weakBind('foo', function() {
+      i += 1;
+    });
+    eventEmitter._listeners.foo[0].call(eventEmitter);
+    eventEmitter._listeners.foo.length.should.equal(0);
+    i.should.equal(1);
+  });
+});
+
+
+describe('eventEmitter.once()', function() {
+
+  it('is an alias for eventEmitter.weakBind()', function() {
+    var eventEmitter = new EventEmitter();
+    eventEmitter.once.should.equal(eventEmitter.weakBind);
   });
 });
 
