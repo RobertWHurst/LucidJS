@@ -7,8 +7,7 @@
 [![Flattr This](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1270541/RobertWHurstLucidJS-on-GitHub)
 
 
-## Navigation
-
+__NOTE:__ This is release marks a very large change to LucidJS, becoming fully prototypal, as well as matching node's eventemitter api. Don't worry, all of the functionallity of the 2.x.x releases can be found in this release as well. The benifits of this release is that the emitter can now be inherited from, and you can use it in projects that currently use node's emitter by simply changing your require statement.
 
 ### Class: LucidJS.EventEmitter
 
