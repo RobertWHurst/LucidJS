@@ -1,4 +1,3 @@
-
 # LucidJS
 
 [![Build Status](https://travis-ci.org/RobertWHurst/LucidJS.png?branch=master)](https://travis-ci.org/RobertWHurst/LucidJS)
@@ -17,6 +16,129 @@ now be inherited from, and you can use it in
 projects that currently use node's emitter by
 simply changing your require statement.
 
+
+##Decouple components, make them lucid.
+
+LucidJS is an event emitter library  offering
+several unique features such as set events,
+emitter piping, DOM node Augmentation, sub events,
+along with the usual event triggering and binding.
+LucidJS emitters also feature meta events that 
+allow listening for event binding and event 
+triggering.
+
+It works with AMD loaders, on NodeJS, and with
+the good old script tag.
+
+
+###Set Events
+
+LucidJS emitters have a method called `.set()`.
+Set allows you to bind to an event even after it
+has happened.
+```javascript
+var emitter = new lucidjs.EventEmitter();
+emitter.flag('ready');
+console.log('fired ready event');
+setTimeout(function() {
+	emitter.bind('ready', function() {
+		console.log('listener bound and executed after ready event');
+	});
+}, 2000);
+
+>>> fired ready event
+>>> listener bound and executed after ready event
+```
+Set is extremely useful for events that only happen
+once and indicate state. Its the perfect solution
+for `load`, `complete` or `ready` events.
+
+
+###Emitter Piping
+
+Sometimes its nice to have a collection of emitters
+and a central emitter to aggregate them. This is
+possible with LucidJS emitters.
+```javascript
+var centralEmitter = new lucidjs.EventEmitter();
+var emitterA = new lucidjs.EventEmitter();
+var emitterB = new lucidjs.EventEmitter();
+var emitterC = new lucidjs.EventEmitter();
+
+//pipe the foo event from emitter A
+emitterA.pipe('foo', centralEmitter);
+
+//pipe the bar and baz event from emitter B
+emitterB.pipe(['bar', 'baz'], centralEmitter);
+
+//pipe all events from emitter C
+emitterC.pipe(centralEmitter);
+```
+
+
+###Sub Events
+
+Ever wish you could have events with sub events? 
+LucidJS makes this possible. Trigger an event called
+`foo.bar.baz` will trigger `foo.bar.baz`, `foo.bar`,
+and `foo`.
+```javascript
+var emitter = new lucidjs.EventEmitter();
+emitter.bind('foo.bar', function() {
+	console.log('foo.bar');
+});
+emitter.bind('foo', function() {
+	console.log('foo');
+});
+emitter.emit('foo.bar.baz');
+
+>>> 'foo.bar'
+>>> 'foo'
+```
+
+
+###Simple Events
+
+Along with all the tasty bits above LucidJS
+emitters are also very good at good old regular
+event passing.
+```javascript
+var emitter = new lucidjs.EventEmitter();
+emitter.bind('foo', function(arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
+	console.log([arg1, arg2, arg3, arg4, arg5, arg6, arg7].join(' '));
+});
+emitter.emit('foo', 'any', 'number', 'of', 'arguments', 'can', 'be', 'passed');
+
+>>> 'any number of arguments can be passed'
+```
+
+
+###Meta Events
+
+LucidJS each emitter also emits a set of meta
+events that let you listen for new listeners on
+an emitter.
+```javascript
+var emitter = new lucidjs.EventEmitter();
+emitter.bind('emitter.listener', function(listener) {
+	console.log('captured listener', listener, 'on event ' + this.event);
+});
+emitter.bind('foo', function() { console.log('bar'); });
+
+>>> 'captured listeners' function() { console.log('bar'); } 'on event foo'
+```
+
+You can event listen to all of the events emitted 
+by an emitter.
+```javascript
+var emitter = new lucidjs.EventEmitter();
+emitter.on('emitter.event', function(event) {
+	console.log('captured event ' + event);
+});
+emitter.emit('foo');
+
+>>> 'captured event foo'
+```
 
 
 ### Class: LucidJS.EventEmitter
