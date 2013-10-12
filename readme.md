@@ -131,7 +131,7 @@ You can event listen to all of the events emitted
 by an emitter.
 ```javascript
 var emitter = new lucidjs.EventEmitter();
-emitter.on('emitter.event', function(event) {
+emitter.bind('emitter.event', function(event) {
 	console.log('captured event ' + event);
 });
 emitter.emit('foo');
