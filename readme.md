@@ -1,5 +1,4 @@
 
-
 # LucidJS
 
 [![Build Status](https://travis-ci.org/RobertWHurst/LucidJS.png?branch=master)](https://travis-ci.org/RobertWHurst/LucidJS)
@@ -22,7 +21,7 @@ simply changing your require statement.
 
 ### Class: LucidJS.EventEmitter
 
-```javascript
+```
 var eventEmitter = new LucidJS.EventEmitter();
 ```
 EventEmitter is a drop in replacement for node's
@@ -47,7 +46,7 @@ returned.
 
 #### Arguments
 
-```javascript
+```
 eventEmitter.bind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
 eventEmitter.bind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
 eventEmitter.bind(String event, Array listeners) => EventEmitter eventEmitter
@@ -76,7 +75,7 @@ they are registered. The eventEmitter is returned.
 
 #### Arguments
 
-```javascript
+```
 eventEmitter.weakBind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
 eventEmitter.weakBind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
 eventEmitter.weakBind(String event, Array listeners) => EventEmitter eventEmitter
@@ -106,7 +105,7 @@ returned.
 
 #### Arguments
 
-```javascript
+```
 eventEmitter.unbind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
 eventEmitter.unbind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
 eventEmitter.unbind(String event, Array listeners) => EventEmitter eventEmitter
@@ -136,7 +135,7 @@ are registered. The eventEmitter is returned.
 
 #### Arguments
 
-```javascript
+```
 eventEmitter.emit(String event, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
 eventEmitter.emit(Array events, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
 ```
@@ -160,7 +159,7 @@ returned.
 
 #### Arguments
 
-```javascript
+```
 eventEmitter.flag(String event, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
 eventEmitter.flag(Array events, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
 ```
