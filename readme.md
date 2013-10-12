@@ -1,3 +1,5 @@
+
+
 # LucidJS
 
 [![Build Status](https://travis-ci.org/RobertWHurst/LucidJS.png?branch=master)](https://travis-ci.org/RobertWHurst/LucidJS)
@@ -5,7 +7,6 @@
 
 [![Endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
 [![Flattr This](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1270541/RobertWHurstLucidJS-on-GitHub)
-
 
 __NOTE:__ This is release marks a very large
 change to LucidJS, becoming fully prototypal,
@@ -17,10 +18,13 @@ now be inherited from, and you can use it in
 projects that currently use node's emitter by
 simply changing your require statement.
 
+
+
 ### Class: LucidJS.EventEmitter
 
-    var eventEmitter = new LucidJS.EventEmitter();
-
+```javascript
+var eventEmitter = new LucidJS.EventEmitter();
+```
 EventEmitter is a drop in replacement for node's
 event emitter. An event emitter can be created by
 simply using the `new` keyword.
@@ -36,19 +40,19 @@ callbacks. Listeners are always triggered in the
 order they are registered. The eventEmitter is
 returned.
 
-
 #### Aliases
 
 - eventEmitter.addListener
 - eventEmitter.on
 
-
 #### Arguments
 
-    eventEmitter.bind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
-    eventEmitter.bind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
-    eventEmitter.bind(String event, Array listeners) => EventEmitter eventEmitter
-    eventEmitter.bind(Array events, Array listeners) => EventEmitter eventEmitter
+```javascript
+eventEmitter.bind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
+eventEmitter.bind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
+eventEmitter.bind(String event, Array listeners) => EventEmitter eventEmitter
+eventEmitter.bind(Array events, Array listeners) => EventEmitter eventEmitter
+```
 
 Argument Name | Allowed Types | Description
 --- | --- | ---
@@ -70,13 +74,14 @@ they are registered. The eventEmitter is returned.
 
 - eventEmitter.once
 
-
 #### Arguments
 
-    eventEmitter.weakBind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
-    eventEmitter.weakBind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
-    eventEmitter.weakBind(String event, Array listeners) => EventEmitter eventEmitter
-    eventEmitter.weakBind(Array events, Array listeners) => EventEmitter eventEmitter
+```javascript
+eventEmitter.weakBind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
+eventEmitter.weakBind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
+eventEmitter.weakBind(String event, Array listeners) => EventEmitter eventEmitter
+eventEmitter.weakBind(Array events, Array listeners) => EventEmitter eventEmitter
+```
 
 Argument Name | Allowed Types | Description
 --- | --- | ---
@@ -94,19 +99,19 @@ from an event, it will no longer fire when the
 event is dispatched. The eventEmitter is
 returned.
 
-
 #### Aliases
 
 - eventEmitter.removeListener
 - eventEmitter.off
 
-
 #### Arguments
 
-    eventEmitter.unbind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
-    eventEmitter.unbind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
-    eventEmitter.unbind(String event, Array listeners) => EventEmitter eventEmitter
-    eventEmitter.unbind(Array events, Array listeners) => EventEmitter eventEmitter
+```javascript
+eventEmitter.unbind(String event, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
+eventEmitter.unbind(Array events, Function listener([arg[, arg[, ...]])) => EventEmitter eventEmitter
+eventEmitter.unbind(String event, Array listeners) => EventEmitter eventEmitter
+eventEmitter.unbind(Array events, Array listeners) => EventEmitter eventEmitter
+```
 
 Argument Name | Allowed Types | Description
 --- | --- | ---
@@ -125,16 +130,16 @@ additional arguments are passed to the listeners.
 Listeners are always triggered in the order they
 are registered. The eventEmitter is returned.
 
-
 #### Aliases
 
 - eventEmitter.trigger
 
-
 #### Arguments
 
-    eventEmitter.emit(String event, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
-    eventEmitter.emit(Array events, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
+```javascript
+eventEmitter.emit(String event, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
+eventEmitter.emit(Array events, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
+```
 
 Argument Name | Allowed Types | Description
 --- | --- | ---
@@ -153,12 +158,12 @@ after they are bound. Any additional arguments are
 passed to the listeners. The eventEmitter is
 returned.
 
-
 #### Arguments
 
+```javascript
 eventEmitter.flag(String event, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
 eventEmitter.flag(Array events, [* arg[, * arg[, ...]]]) => EventEmitter eventEmitter
-
+```
 
 Argument Name | Allowed Types | Description
 --- | --- | ---
@@ -169,8 +174,6 @@ arg | * | Any argument to be passed to bound or future listeners.
 
 ### eventEmitter.unflag(event)
 
-
-
 #### Arguments
 
 Argument Name | Allowed Types | Description
@@ -178,7 +181,6 @@ Argument Name | Allowed Types | Description
 
 
 ### eventEmitter.pipe([event], eventEmitter)
-
 
 #### Arguments
 
@@ -188,7 +190,6 @@ Argument Name | Allowed Types | Description
 
 ### eventEmitter.unpipe([event], eventEmitter)
 
-
 #### Arguments
 
 Argument Name | Allowed Types | Description
@@ -196,7 +197,6 @@ Argument Name | Allowed Types | Description
 
 
 ### eventEmitter.listeners([event])
-
 
 #### Arguments
 
@@ -206,13 +206,9 @@ Argument Name | Allowed Types | Description
 
 ### eventEmitter.unbindAll([event])
 
-
-
-
 #### Aliases
 
 - eventEmitter.removeAllListeners
-
 
 #### Arguments
 
