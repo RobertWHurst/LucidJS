@@ -19,13 +19,12 @@ simply changing your require statement.
 
 ##Decouple components, make them lucid.
 
-LucidJS is an event emitter library  offering
+LucidJS is an event emitter library offering
 several unique features such as set events,
-emitter piping, DOM node Augmentation, sub events,
-along with the usual event triggering and binding.
-LucidJS emitters also feature meta events that 
-allow listening for event binding and event 
-triggering.
+emitter piping, sub events, along with the 
+usual event triggering and binding. LucidJS 
+emitters also feature meta events that  allow 
+listening for event binding and event  triggering.
 
 It works with AMD loaders, on NodeJS, and with
 the good old script tag.
