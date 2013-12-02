@@ -184,8 +184,8 @@ listeners | Array | An array of functions to call when the event(s) are dispatch
 
 ### eventEmitter.weakBind(event, listener)
 
-Similar to `bind()`, `weekBind()` binds a listener
-to an event, however, `weekBind()` automatically
+Similar to `bind()`, `weakBind()` binds a listener
+to an event, however, `weakBind()` automatically
 unbinds its listener after its event is fired just
 once. Listeners are always triggered in the order
 they are registered. The eventEmitter is returned.
