@@ -36,13 +36,13 @@ LucidJS emitters have a method called `.set()`.
 Set allows you to bind to an event even after it
 has happened.
 ```javascript
-var emitter = new lucidjs.EventEmitter();
+var emitter = new LucidJS.EventEmitter();
 emitter.flag('ready');
 console.log('fired ready event');
 setTimeout(function() {
-	emitter.bind('ready', function() {
-		console.log('listener bound and executed after ready event');
-	});
+  emitter.bind('ready', function() {
+    console.log('listener bound and executed after ready event');
+  });
 }, 2000);
 
 >>> fired ready event
@@ -59,10 +59,10 @@ Sometimes its nice to have a collection of emitters
 and a central emitter to aggregate them. This is
 possible with LucidJS emitters.
 ```javascript
-var centralEmitter = new lucidjs.EventEmitter();
-var emitterA = new lucidjs.EventEmitter();
-var emitterB = new lucidjs.EventEmitter();
-var emitterC = new lucidjs.EventEmitter();
+var centralEmitter = new LucidJS.EventEmitter();
+var emitterA = new LucidJS.EventEmitter();
+var emitterB = new LucidJS.EventEmitter();
+var emitterC = new LucidJS.EventEmitter();
 
 //pipe the foo event from emitter A
 emitterA.pipe('foo', centralEmitter);
@@ -82,12 +82,12 @@ LucidJS makes this possible. Trigger an event called
 `foo.bar.baz` will trigger `foo.bar.baz`, `foo.bar`,
 and `foo`.
 ```javascript
-var emitter = new lucidjs.EventEmitter();
+var emitter = new LucidJS.EventEmitter();
 emitter.bind('foo.bar', function() {
-	console.log('foo.bar');
+  console.log('foo.bar');
 });
 emitter.bind('foo', function() {
-	console.log('foo');
+  console.log('foo');
 });
 emitter.emit('foo.bar.baz');
 
@@ -102,9 +102,9 @@ Along with all the tasty bits above LucidJS
 emitters are also very good at good old regular
 event passing.
 ```javascript
-var emitter = new lucidjs.EventEmitter();
+var emitter = new LucidJS.EventEmitter();
 emitter.bind('foo', function(arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
-	console.log([arg1, arg2, arg3, arg4, arg5, arg6, arg7].join(' '));
+  console.log([arg1, arg2, arg3, arg4, arg5, arg6, arg7].join(' '));
 });
 emitter.emit('foo', 'any', 'number', 'of', 'arguments', 'can', 'be', 'passed');
 
@@ -118,9 +118,9 @@ LucidJS each emitter also emits a set of meta
 events that let you listen for new listeners on
 an emitter.
 ```javascript
-var emitter = new lucidjs.EventEmitter();
+var emitter = new LucidJS.EventEmitter();
 emitter.bind('emitter.listener', function(listener) {
-	console.log('captured listener', listener, 'on event ' + this.event);
+  console.log('captured listener', listener, 'on event ' + this.event);
 });
 emitter.bind('foo', function() { console.log('bar'); });
 
@@ -130,9 +130,9 @@ emitter.bind('foo', function() { console.log('bar'); });
 You can event listen to all of the events emitted 
 by an emitter.
 ```javascript
-var emitter = new lucidjs.EventEmitter();
+var emitter = new LucidJS.EventEmitter();
 emitter.bind('emitter.event', function(event) {
-	console.log('captured event ' + event);
+  console.log('captured event ' + event);
 });
 emitter.emit('foo');
 
