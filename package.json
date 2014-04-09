@@ -11,12 +11,10 @@
 	],
 	"author": "Robert Hurst<robertwhurst@gmail.com>",
 	"bugs": "https://github.com/RobertWHurst/LucidJS/issues",
-	"repository": [
-		{
-			"type": "git",
-			"url": "https://github.com/RobertWHurst/LucidJS.git"
-		}
-	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RobertWHurst/LucidJS.git"
+	},
 	"license": "BSD",
 	"devDependencies": {
 		"mocha": "~1.12.0",
