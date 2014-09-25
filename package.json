@@ -1,24 +1,27 @@
 {
-	"name": "lucidjs",
-	"description": "LucidJS is an uber simple and easy to use event emitter library. Lucid allows you to create your own event system and even pipe in events from any number of DOM elements.",
-	"version": "3.0.0-beta",
-	"main": "./lib/lucid.js",
-	"scripts": {
-		"test": "make test"
-	},
-	"keywords": [
-		"Event Emitter"
-	],
-	"author": "Robert Hurst<robertwhurst@gmail.com>",
-	"bugs": "https://github.com/RobertWHurst/LucidJS/issues",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/RobertWHurst/LucidJS.git"
-	},
-	"license": "BSD",
-	"devDependencies": {
-		"mocha": "~1.12.0",
-		"should": "~1.2.2",
-		"browserify": "~2.25.1"
-	}
+  "name": "lucidjs",
+  "description": "LucidJS is an uber simple and easy to use event emitter library. Lucid allows you to create your own event system and even pipe in events from any number of DOM elements.",
+  "version": "3.0.0",
+  "main": "./index",
+  "scripts": {
+    "test": "tape ./test/*.js | tap-dot",
+    "build": "browserify -t uglifyify -e ./index.js -o ./dist/lucid.js -s lucidJS"
+  },
+  "keywords": [
+    "Event Emitter"
+  ],
+  "author": "Robert Hurst <robertwhurst@gmail.com>",
+  "bugs": "https://github.com/RobertWHurst/LucidJS/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RobertWHurst/LucidJS.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^5.12.0",
+    "tap-dot": "^0.2.3",
+    "tap-spec": "^1.0.0",
+    "tape": "^3.0.0",
+    "uglifyify": "^2.5.0"
+  }
 }
