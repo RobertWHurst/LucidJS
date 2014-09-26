@@ -1,6 +1,6 @@
 # LucidJS
 
-[![Build Status](https://travis-ci.org/RobertWHurst/lucidJS.png?branch=master)](https://travis-ci.org/RobertWHurst/LucidJS)
+[![Build Status](https://circleci.com/gh/RobertWHurst/LucidJS.png?circle-token=:circle-token)
 [![NPM version](https://badge.fury.io/js/lucidjs.png)](http://badge.fury.io/js/lucidjs)
 [![Endorse](http://api.coderwall.com/robertwhurst/endorsecount.png)](http://coderwall.com/robertwhurst)
 [![Flattr This](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/1270541/RobertWHurstLucidJS-on-GitHub)
@@ -20,9 +20,9 @@ simply changing your require statement.
 
 LucidJS is an event emitter library offering
 several unique features such as set events,
-emitter piping, sub events, along with the 
-usual event triggering and binding. LucidJS 
-emitters also feature meta events that  allow 
+emitter piping, sub events, along with the
+usual event triggering and binding. LucidJS
+emitters also feature meta events that  allow
 listening for event binding and event  triggering.
 
 It works with AMD loaders, on NodeJS, and with
@@ -76,7 +76,7 @@ emitterC.pipe(centralEmitter);
 
 ###Sub Events
 
-Ever wish you could have events with sub events? 
+Ever wish you could have events with sub events?
 LucidJS makes this possible. Trigger an event called
 `foo.bar.baz` will trigger `foo.bar.baz`, `foo.bar`,
 and `foo`.
@@ -126,7 +126,7 @@ emitter.bind('foo', function() { console.log('bar'); });
 >>> 'captured listeners' function() { console.log('bar'); } 'on event foo'
 ```
 
-You can event listen to all of the events emitted 
+You can event listen to all of the events emitted
 by an emitter.
 ```javascript
 var emitter = new lucidJS.EventEmitter();
