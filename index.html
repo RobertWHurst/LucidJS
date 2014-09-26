@@ -1,557 +1,513 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=640" />
-
-    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
-    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
-
-    <script type="text/javascript" src="javascripts/modernizr.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function () {
-        $('#main_content').headsmart()
-      })
-    </script>
     <title>LucidJS by RobertWHurst</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
-    <a id="forkme_banner" href="https://github.com/RobertWHurst/LucidJS">View on GitHub</a>
-    <div class="shell">
-
+    <div class="wrapper">
       <header>
-        <span class="ribbon-outer">
-          <span class="ribbon-inner">
-            <h1>LucidJS</h1>
-            <h2>LucidJS is a chainable event emitter library. It offers several unique features such as set events, emitter piping, DOM node encapsulation, sub events, along with the usual event triggering and binding. LucidJS emitters also feature meta events that allow listening for event binding and event triggering.</h2>
-          </span>
-          <span class="left-tail"></span>
-          <span class="right-tail"></span>
-        </span>
+        <h1 class="header">LucidJS</h1>
+        <p class="header">LucidJS is a chainable event emitter library. It offers several unique features such as set events, emitter piping, DOM node encapsulation, sub events, along with the usual event triggering and binding. LucidJS emitters also feature meta events that allow listening for event binding and event triggering.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/RobertWHurst/LucidJS/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/RobertWHurst/LucidJS/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/RobertWHurst/LucidJS">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/RobertWHurst">RobertWHurst</a></p>
+
+
       </header>
+      <section>
+        <h1>
+<a name="lucidjs" class="anchor" href="#lucidjs"><span class="octicon octicon-link"></span></a>LucidJS</h1>
 
-      <section id="downloads">
-        <span class="inner">
-          <a href="https://github.com/RobertWHurst/LucidJS/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/RobertWHurst/LucidJS/tarball/master" class="tgz"><em>download</em> .TGZ</a>
-        </span>
-      </section>
+<p><a href="https://travis-ci.org/RobertWHurst/LucidJS"><img src="https://travis-ci.org/RobertWHurst/lucidJS.png?branch=master" alt="Build Status"></a>
+<a href="http://badge.fury.io/js/lucidjs"><img src="https://badge.fury.io/js/lucidjs.png" alt="NPM version"></a>
+<a href="http://coderwall.com/robertwhurst"><img src="http://api.coderwall.com/robertwhurst/endorsecount.png" alt="Endorse"></a>
+<a href="http://flattr.com/thing/1270541/RobertWHurstLucidJS-on-GitHub"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr This"></a></p>
 
+<p><strong>NOTE:</strong> This is release marks a very large
+change to LucidJS, becoming fully prototypal,
+aswell as matching node's EventEmitter api. Don't
+worry, all of the functionallity of the 2.x.x
+releases can be found in this release aswell. The
+benifits of this release is that the emitter can
+now be inherited from, and you can use it in
+projects that currently use node's emitter by
+simply changing your require statement.</p>
 
-      <span class="banner-fix"></span>
+<h2>
+<a name="decouple-components-make-them-lucid" class="anchor" href="#decouple-components-make-them-lucid"><span class="octicon octicon-link"></span></a>Decouple components, make them lucid.</h2>
 
+<p>LucidJS is an event emitter library offering
+several unique features such as set events,
+emitter piping, sub events, along with the 
+usual event triggering and binding. LucidJS 
+emitters also feature meta events that  allow 
+listening for event binding and event  triggering.</p>
 
-      <section id="main_content">
-        <h1>LucidJS</h1>
+<p>It works with AMD loaders, on NodeJS, and with
+the good old script tag.</p>
 
-<h2>Decouple components, make them lucid.</h2>
+<h3>
+<a name="set-events" class="anchor" href="#set-events"><span class="octicon octicon-link"></span></a>Set Events</h3>
 
-<p>LucidJS is an event emitter library  offering several unique features such as set events, emitter piping, DOM node Augmentation, sub events, along with the usual event triggering and binding. LucidJS emitters also feature meta events that allow listening for event binding and event triggering.</p>
+<p>LucidJS emitters have a method called <code>.set()</code>.
+Set allows you to bind to an event even after it
+has happened.</p>
 
-<p>It works with AMD loaders, on NodeJS, and with the good old script tag.</p>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">emitter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">flag</span><span class="p">(</span><span class="s1">'ready'</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'fired ready event'</span><span class="p">);</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'ready'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'listener bound and executed after ready event'</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
 
-<h3>Set Events</h3>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">fired</span> <span class="nx">ready</span> <span class="nx">event</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nx">listener</span> <span class="nx">bound</span> <span class="nx">and</span> <span class="nx">executed</span> <span class="nx">after</span> <span class="nx">ready</span> <span class="nx">event</span>
+</pre></div>
 
-<p>LucidJS emitters have a method called <code>.set()</code>. Set allows you to bind to an event even after it has happened.</p>
+<p>Set is extremely useful for events that only happen
+once and indicate state. Its the perfect solution
+for <code>load</code>, <code>complete</code> or <code>ready</code> events.</p>
 
-<pre><code>var emitter = LucidJS.emitter();
-emitter.set('ready');
-console.log('fired ready event');
-setTimeout(function() {
-    emitter.on('ready', function() {
-        console.log('listener bound and executed after ready event');
-    });
-}, 2000);
+<h3>
+<a name="emitter-piping" class="anchor" href="#emitter-piping"><span class="octicon octicon-link"></span></a>Emitter Piping</h3>
 
-&gt;&gt;&gt; fired ready event
-&gt;&gt;&gt; listener bound and executed after ready event
+<p>Sometimes its nice to have a collection of emitters
+and a central emitter to aggregate them. This is
+possible with LucidJS emitters.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">centralEmitter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">emitterA</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">emitterB</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">emitterC</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+
+<span class="c1">//pipe the foo event from emitter A</span>
+<span class="nx">emitterA</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="nx">centralEmitter</span><span class="p">);</span>
+
+<span class="c1">//pipe the bar and baz event from emitter B</span>
+<span class="nx">emitterB</span><span class="p">.</span><span class="nx">pipe</span><span class="p">([</span><span class="s1">'bar'</span><span class="p">,</span> <span class="s1">'baz'</span><span class="p">],</span> <span class="nx">centralEmitter</span><span class="p">);</span>
+
+<span class="c1">//pipe all events from emitter C</span>
+<span class="nx">emitterC</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">centralEmitter</span><span class="p">);</span>
+</pre></div>
+
+<h3>
+<a name="sub-events" class="anchor" href="#sub-events"><span class="octicon octicon-link"></span></a>Sub Events</h3>
+
+<p>Ever wish you could have events with sub events? 
+LucidJS makes this possible. Trigger an event called
+<code>foo.bar.baz</code> will trigger <code>foo.bar.baz</code>, <code>foo.bar</code>,
+and <code>foo</code>.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">emitter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'foo.bar'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo.bar'</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">'foo.bar.baz'</span><span class="p">);</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">'foo.bar'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">'foo'</span>
+</pre></div>
+
+<h3>
+<a name="simple-events" class="anchor" href="#simple-events"><span class="octicon octicon-link"></span></a>Simple Events</h3>
+
+<p>Along with all the tasty bits above LucidJS
+emitters are also very good at good old regular
+event passing.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">emitter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="nx">arg3</span><span class="p">,</span> <span class="nx">arg4</span><span class="p">,</span> <span class="nx">arg5</span><span class="p">,</span> <span class="nx">arg6</span><span class="p">,</span> <span class="nx">arg7</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="nx">arg3</span><span class="p">,</span> <span class="nx">arg4</span><span class="p">,</span> <span class="nx">arg5</span><span class="p">,</span> <span class="nx">arg6</span><span class="p">,</span> <span class="nx">arg7</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">));</span>
+<span class="p">});</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'any'</span><span class="p">,</span> <span class="s1">'number'</span><span class="p">,</span> <span class="s1">'of'</span><span class="p">,</span> <span class="s1">'arguments'</span><span class="p">,</span> <span class="s1">'can'</span><span class="p">,</span> <span class="s1">'be'</span><span class="p">,</span> <span class="s1">'passed'</span><span class="p">);</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">'any number of arguments can be passed'</span>
+</pre></div>
+
+<h3>
+<a name="meta-events" class="anchor" href="#meta-events"><span class="octicon octicon-link"></span></a>Meta Events</h3>
+
+<p>LucidJS each emitter also emits a set of meta
+events that let you listen for new listeners on
+an emitter.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">emitter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'emitter.listener'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">listener</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'captured listener'</span><span class="p">,</span> <span class="nx">listener</span><span class="p">,</span> <span class="s1">'on event '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">event</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'bar'</span><span class="p">);</span> <span class="p">});</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">'captured listeners'</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'bar'</span><span class="p">);</span> <span class="p">}</span> <span class="s1">'on event foo'</span>
+</pre></div>
+
+<p>You can event listen to all of the events emitted 
+by an emitter.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">emitter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">lucidJS</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">();</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'emitter.event'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'captured event '</span> <span class="o">+</span> <span class="nx">event</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">emitter</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="s1">'captured event foo'</span>
+</pre></div>
+
+<h3>
+<a name="class-lucidjseventemitter" class="anchor" href="#class-lucidjseventemitter"><span class="octicon octicon-link"></span></a>Class: lucidJS.EventEmitter</h3>
+
+<pre><code>var eventEmitter = new lucidJS.EventEmitter();
 </code></pre>
 
-<p>Set is extremely useful for events that only happen once and indicate state. Its the perfect solution for <code>load</code>, <code>complete</code> or <code>ready</code> events.</p>
+<p>EventEmitter is a drop in replacement for node's
+event emitter. An event emitter can be created by
+simply using the <code>new</code> keyword.</p>
 
-<h3>Emitter Piping</h3>
+<h3>
+<a name="eventemitterbindevent-listener" class="anchor" href="#eventemitterbindevent-listener"><span class="octicon octicon-link"></span></a>eventEmitter.bind(event, listener)</h3>
 
-<p>Sometimes its nice to have a collection of emitters and a central emitter to aggregate them. This is possible with LucidJS emitters.</p>
+<p>To bind to an event you can use <code>bind()</code>, or its
+aliases <code>addListener()</code> and <code>addListener()</code>.
+It accepts two arguments; An event, or array
+of events, and a callback, or an array of
+callbacks. Listeners are always triggered in the
+order they are registered. The eventEmitter is
+returned.</p>
 
-<pre><code>var centralEmitter = LucidJS.emitter();
-var emitterA = LucidJS.emitter();
-var emitterB = LucidJS.emitter();
-var emitterC = LucidJS.emitter();
+<h4>
+<a name="aliases" class="anchor" href="#aliases"><span class="octicon octicon-link"></span></a>Aliases</h4>
 
-//pipe the foo event from emitter A
-centralEmitter.pipe('foo', emitterA);
+<ul>
+<li>eventEmitter.addListener</li>
+<li>eventEmitter.on</li>
+</ul><h4>
+<a name="arguments" class="anchor" href="#arguments"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
-//pipe the bar and baz event from emitter B
-centralEmitter.pipe(['bar', 'baz'], emitterB);
-
-//pipe all events from emitter C
-centralEmitter.pipe(emitterC);
-</code></pre>
-
-<h3>DOM Node Augmentation</h3>
-
-<p>In the browser you may listen to the events emitted by DOM nodes using LucidJS's emitter API.</p>
-
-<pre><code>var button = document.getElementByID('button');
-LucidJS.emitter(button);
-button.on('click', function(event) {
-    console.log('the button was clicked');
-    event.preventDefault();
-});
-</code></pre>
-
-<p>As a side note any object or array can be augmented by passing it into <code>LucidJS.emitter()</code>, the emitter constructor. DOM node event capture is just an added bonus.</p>
-
-<h3>Sub Events</h3>
-
-<p>Ever wish you could have events with sub events? LucidJS makes this possible. Trigger an event called <code>foo.bar.baz</code> will trigger <code>foo.bar.baz</code>, <code>foo.bar</code>, and <code>foo</code>.</p>
-
-<pre><code>var emitter = LucidJS.emitter();
-emitter.on('foo.bar', function() {
-    console.log('foo.bar');
-});
-emitter.on('foo', function() {
-    console.log('foo');
-});
-emitter.trigger('foo.bar.baz');
-
-&gt;&gt;&gt; 'foo.bar'
-&gt;&gt;&gt; 'foo'
-</code></pre>
-
-<h3>Simple Events</h3>
-
-<p>Along with all the tasty bits above LucidJS emitters are also very good at good old regular event passing.</p>
-
-<pre><code>var emitter = LucidJS.emitter();
-emitter.on('foo', function(arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
-    console.log([arg1, arg2, arg3, arg4, arg5, arg6, arg7].join(' '));
-});
-emitter.trigger('foo', 'any', 'number', 'of', 'arguments', 'can', 'be', 'passed');
-
-&gt;&gt;&gt; 'any number of arguments can be passed'
-</code></pre>
-
-<h3>Meta Events</h3>
-
-<p>LucidJS each emitter also emits a set of meta events that let you listen for new listeners on an emitter.</p>
-
-<pre><code>var emitter = LucidJS.emitter();
-emitter.on('emitter.listener', function(event, listeners) {
-    console.log('captured listeners', listeners, 'on event ' + event);
-});
-emitter.on('foo', function() { console.log('bar'); });
-
-&gt;&gt;&gt; 'captured listeners' [
-        function() { console.log('bar'); }
-    ] 'on event foo'
-</code></pre>
-
-<p>You can event listen to all of the events emitted by an emitter.</p>
-
-<pre><code>var emitter = LucidJS.emitter();
-emitter.on('emitter.event', function(event) {
-    console.log('captured event ' + event);
-});
-emitter.trigger('foo');
-
-&gt;&gt;&gt; 'captured event foo'
-</code></pre>
-
-<h2>Documentation</h2>
-
-<h3>LucidJS.emitter()</h3>
-
-<p>Creates an event emitter and returns it. If an object is passed in the object is augmented with emitter methods. If a DOM node is passed in it will also be augmented, however any DOM events emitted by the node will also be emitted by the emitter.</p>
-
-<h4>Arguments</h4>
-
-<pre><code>LucidJS.emitter([object object]) =&gt; object emitter
-</code></pre>
-
-<table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>object</td>
-            <td>Optional. Any object or array you wish to turn into an emitter.</td>
-            <td>object</td>
-        </tr>
-</table><pre><code>LucidJS.emitter([object node]) =&gt; object emitter
-</code></pre>
-
-<table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>node</td>
-            <td>Optional. Any DOM node you wish to turn into an emitter.</td>
-            <td>object</td>
-        </tr>
-</table><h3>emitter{}</h3>
-
-<pre><code>emitter
-    on()
-    once()
-    trigger()
-    set()
-    pipe()
-        clear()
-    listeners()
-        clear()
-</code></pre>
-
-<p>The emitter object is produced <code>LucidJS.emitter</code>. Any objects passed into <code>LucidJS.emitter</code> will have all of the above methods attached. The emitter object contains the API for interacting with the emitter.</p>
-
-<h3>binding{}</h3>
-
-<pre><code>binding
-    clear()
-</code></pre>
-
-<p>The binding object is returned by <code>emitter.on</code>, <code>emitter.once</code>, <code>emitter.set</code>, and <code>emitter.pipe</code>. Executing <code>binding.clear()</code> will destroy the event binding or pipe that the binding was returned from.</p>
-
-<h3>emitter.on()</h3>
-
-<p>Binds any number of listener callbacks to an event or an array of events. Whenever the given event or events are triggered or set on emitter, the listener callbacks will be executed. Any arguments passed to <code>trigger()</code> after the event will be passed into the listener callbacks on execution.</p>
-
-<p>If any of the listener callbacks return <code>false</code>, the <code>emitter.trigger</code> or <code>emitter.set</code> that fired the event will return false.
-If the event was from a DOM node and <code>false</code> is returned both <code>event.stopPropigation</code> and <code>event.preventDefault</code> will be called.</p>
-
-<p><code>emitter.on</code> returns a <code>binding</code> object that can be used to modify the event binding.</p>
-
-<h4>Arguments</h4>
-
-<pre><code>emitter.on(string event, function listener[, ...]) =&gt; object binding
+<pre><code>eventEmitter.bind(String event, Function listener([arg[, arg[, ...]])) =&gt; EventEmitter eventEmitter
+eventEmitter.bind(Array events, Function listener([arg[, arg[, ...]])) =&gt; EventEmitter eventEmitter
+eventEmitter.bind(String event, Array listeners) =&gt; EventEmitter eventEmitter
+eventEmitter.bind(Array events, Array listeners) =&gt; EventEmitter eventEmitter
 </code></pre>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
 <tr>
 <td>event</td>
-            <td>The name of the event that the listener will be bound to.</td>
-            <td>string</td>
-        </tr>
+<td>String</td>
+<td>An event name to bind too.</td>
+</tr>
 <tr>
 <td>listener</td>
-            <td>A callback function that will be executed whenever the event given is triggered.</td>
-            <td>function</td>
-        </tr>
-</table><pre><code>emitter.on(array events, function listener[, ...]) =&gt; object binding
+<td>String</td>
+<td>A function to call when the event(s) are dispatched.</td>
+</tr>
+<tr>
+<td>events</td>
+<td>Array</td>
+<td>An array of event names to bind to.</td>
+</tr>
+<tr>
+<td>listeners</td>
+<td>Array</td>
+<td>An array of functions to call when the event(s) are dispatched.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="eventemitterweakbindevent-listener" class="anchor" href="#eventemitterweakbindevent-listener"><span class="octicon octicon-link"></span></a>eventEmitter.weakBind(event, listener)</h3>
+
+<p>Similar to <code>bind()</code>, <code>weakBind()</code> binds a listener
+to an event, however, <code>weakBind()</code> automatically
+unbinds its listener after its event is fired just
+once. Listeners are always triggered in the order
+they are registered. The eventEmitter is returned.</p>
+
+<h4>
+<a name="aliases-1" class="anchor" href="#aliases-1"><span class="octicon octicon-link"></span></a>Aliases</h4>
+
+<ul>
+<li>eventEmitter.once</li>
+</ul><h4>
+<a name="arguments-1" class="anchor" href="#arguments-1"><span class="octicon octicon-link"></span></a>Arguments</h4>
+
+<pre><code>eventEmitter.weakBind(String event, Function listener([arg[, arg[, ...]])) =&gt; EventEmitter eventEmitter
+eventEmitter.weakBind(Array events, Function listener([arg[, arg[, ...]])) =&gt; EventEmitter eventEmitter
+eventEmitter.weakBind(String event, Array listeners) =&gt; EventEmitter eventEmitter
+eventEmitter.weakBind(Array events, Array listeners) =&gt; EventEmitter eventEmitter
 </code></pre>
 
 <table>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
 <tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>events</td>
-            <td>An array of event names the listener will be bound to.</td>
-            <td>array</td>
-        </tr>
+<td>event</td>
+<td>String</td>
+<td>An event name to bind too.</td>
+</tr>
 <tr>
 <td>listener</td>
-            <td>A callback function that will be executed whenever the event given is triggered.</td>
-            <td>function</td>
-        </tr>
-</table><h3>emitter.once()</h3>
+<td>String</td>
+<td>A function to call when the event(s) are dispatched.</td>
+</tr>
+<tr>
+<td>events</td>
+<td>Array</td>
+<td>An array of event names to listen for.</td>
+</tr>
+<tr>
+<td>listeners</td>
+<td>Array</td>
+<td>An array of functions to call when the event(s) are dispatched.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="eventemitterunbindevent-listener" class="anchor" href="#eventemitterunbindevent-listener"><span class="octicon octicon-link"></span></a>eventEmitter.unbind(event, listener)</h3>
 
-<p>Binds a listener to an event. Acts exactly like <code>emitter.on</code> with the exception that once the given event is triggered the binding is automatically cleared. Because of this any listeners bound with <code>emitter.once</code> will once fire once.</p>
+<p>Unbinds a listener, or an array of listeners from
+an event, or events. Once a listener is unbound
+from an event, it will no longer fire when the
+event is dispatched. The eventEmitter is
+returned.</p>
 
-<p><code>emitter.once</code> returns a <code>binding</code> object that can be used to modify the event binding.</p>
+<h4>
+<a name="aliases-2" class="anchor" href="#aliases-2"><span class="octicon octicon-link"></span></a>Aliases</h4>
 
-<h4>Arguments</h4>
+<ul>
+<li>eventEmitter.removeListener</li>
+<li>eventEmitter.off</li>
+</ul><h4>
+<a name="arguments-2" class="anchor" href="#arguments-2"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
-<pre><code>emitter.once(string event, function listener[, …]) =&gt; object binding
+<pre><code>eventEmitter.unbind(String event, Function listener([arg[, arg[, ...]])) =&gt; EventEmitter eventEmitter
+eventEmitter.unbind(Array events, Function listener([arg[, arg[, ...]])) =&gt; EventEmitter eventEmitter
+eventEmitter.unbind(String event, Array listeners) =&gt; EventEmitter eventEmitter
+eventEmitter.unbind(Array events, Array listeners) =&gt; EventEmitter eventEmitter
 </code></pre>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
 <tr>
 <td>event</td>
-            <td>The name of the event that the listener will be bound to.</td>
-            <td>string</td>
-        </tr>
+<td>String</td>
+<td>An event the listener is bound to.</td>
+</tr>
 <tr>
 <td>listener</td>
-            <td>A callback function that will be executed whenever the event given is triggered.</td>
-            <td>function</td>
-        </tr>
-</table><pre><code>emitter.once(array events, function listener[, …]) =&gt; object binding
-</code></pre>
-
-<table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<td>String</td>
+<td>A listener to unbind from the event.</td>
+</tr>
 <tr>
 <td>events</td>
-            <td>An array of event names the listener will be bound to.</td>
-            <td>array</td>
-        </tr>
+<td>Array</td>
+<td>An array of events the listener is bound to.</td>
+</tr>
 <tr>
-<td>listener</td>
-            <td>A callback function that will be executed whenever the event given is triggered.</td>
-            <td>function</td>
-        </tr>
-</table><h3>emitter.trigger()</h3>
+<td>listeners</td>
+<td>Array</td>
+<td>An array of functions to unbind from the event.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="eventemitteremitevent-arg-arg-" class="anchor" href="#eventemitteremitevent-arg-arg-"><span class="octicon octicon-link"></span></a>eventEmitter.emit(event, [arg[, arg[, ...]]])</h3>
 
-<p>Triggers an event or an array of events on the emitter. Any listeners bound with <code>emitter.on</code> or <code>emitter.once</code> will be executed. Any additional arguments passed into <code>emitter.trigger</code> excluding the first argument; the event, will be passed to any and all listeners bound to the emitter.</p>
+<p>Dispatching events is done with <code>emit()</code>, or its
+alias <code>trigger()</code>. Any listeners bound to the
+event passed will be triggered immediately. Any
+additional arguments are passed to the listeners.
+Listeners are always triggered in the order they
+are registered. The eventEmitter is returned.</p>
 
-<p>If any listeners triggered explicitly return <code>false</code> then <code>emitter.trigger</code> will return false as well.</p>
+<h4>
+<a name="aliases-3" class="anchor" href="#aliases-3"><span class="octicon octicon-link"></span></a>Aliases</h4>
 
-<h4>Arguments</h4>
+<ul>
+<li>eventEmitter.trigger</li>
+</ul><h4>
+<a name="arguments-3" class="anchor" href="#arguments-3"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
-<pre><code>emitter.trigger(string event, * arg[, ...]) =&gt; bool successful
+<pre><code>eventEmitter.emit(String event, [* arg[, * arg[, ...]]]) =&gt; EventEmitter eventEmitter
+eventEmitter.emit(Array events, [* arg[, * arg[, ...]]]) =&gt; EventEmitter eventEmitter
 </code></pre>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
 <tr>
 <td>event</td>
-            <td>The name of the event that will be triggered.</td>
-            <td>string</td>
-        </tr>
-<tr>
-<td>arg</td>
-            <td>Any argument to be passed into listeners of the event.</td>
-            <td>*</td>
-        </tr>
-</table><pre><code>emitter.trigger(array events, * arg[, ...]) =&gt; bool successful
-</code></pre>
-
-<table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<td>String</td>
+<td>An event to trigger.</td>
+</tr>
 <tr>
 <td>events</td>
-            <td>An array of event names that will be triggered.</td>
-            <td>array</td>
-        </tr>
+<td>Array</td>
+<td>An array of events to trigger.</td>
+</tr>
 <tr>
 <td>arg</td>
-            <td>Any argument to be passed into listeners of the event.</td>
-            <td>*</td>
-        </tr>
-</table><h3>emitter.set()</h3>
+<td>*</td>
+<td>Any argument to be passed to all bound event listeners.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="eventemitterflagevent-arg-arg-" class="anchor" href="#eventemitterflagevent-arg-arg-"><span class="octicon octicon-link"></span></a>eventEmitter.flag(event, [arg[, arg[, ...]]])</h3>
 
-<p>Works like trigger except that any listeners bound to the event or events after <code>emitter.set</code> is called will be fired as soon as they are bound. This is great of events that only happen once such as a <code>load</code> event. It prevents your listeners from missing an event because it has already fired prior to binding them.</p>
+<p>Flags an event on an emitter. A setting a flag
+will immediately trigger any event listeners bound
+prior to calling <code>flag</code>. Any listeners bound after
+the flag is set will be triggered immediately
+after they are bound. Any additional arguments are
+passed to the listeners. The eventEmitter is
+returned.</p>
 
-<h4>Arguments</h4>
+<h4>
+<a name="arguments-4" class="anchor" href="#arguments-4"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
-<pre><code>emitter.set(string event, * arg[, ...]) =&gt; bool successful
+<pre><code>eventEmitter.flag(String event, [* arg[, * arg[, ...]]]) =&gt; EventEmitter eventEmitter
+eventEmitter.flag(Array events, [* arg[, * arg[, ...]]]) =&gt; EventEmitter eventEmitter
 </code></pre>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
 <tr>
 <td>event</td>
-            <td>The name of the event that will be set.</td>
-            <td>string</td>
-        </tr>
-<tr>
-<td>arg</td>
-            <td>Any argument to be passed into listeners of the event.</td>
-            <td>*</td>
-        </tr>
-</table><pre><code>emitter.set(array events, * arg[, ...]) =&gt; bool successful
-</code></pre>
-
-<table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
+<td>String</td>
+<td>An event the flag is bound to.</td>
+</tr>
 <tr>
 <td>events</td>
-            <td>An array of event names that will be set.</td>
-            <td>array</td>
-        </tr>
+<td>Array</td>
+<td>An array of events the flag is bound to.</td>
+</tr>
 <tr>
 <td>arg</td>
-            <td>Any argument to be passed into listeners of the event.</td>
-            <td>*</td>
-        </tr>
-</table><h3>emitter.pipe()</h3>
+<td>*</td>
+<td>Any argument to be passed to bound or future listeners.</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="eventemitterunflagevent" class="anchor" href="#eventemitterunflagevent"><span class="octicon octicon-link"></span></a>eventEmitter.unflag(event)</h3>
 
-<p>Pipes all events or select events from one or more emitters, into another. Any events emitted by the piped emitters will also be emitted by the emitter pipe was called on. This is extremely powerful and allows you to chain your emitters.</p>
-
-<p>Returns a pipe object that can be used to clear the pipe.</p>
-
-<h4>Arguments</h4>
-
-<pre><code>emitter.pipe(object emitter[, ...]) =&gt; object pipe
-</code></pre>
+<h4>
+<a name="arguments-5" class="anchor" href="#arguments-5"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>emitter</td>
-            <td>The emitter that events will be piped from.</td>
-            <td>object</td>
-        </tr>
-</table><pre><code>emitter.pipe(string event, object emitter[, ...]) =&gt; object pipe
-</code></pre>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody></tbody>
+</table><h3>
+<a name="eventemitterpipeevent-eventemitter" class="anchor" href="#eventemitterpipeevent-eventemitter"><span class="octicon octicon-link"></span></a>eventEmitter.pipe([event], eventEmitter)</h3>
+
+<h4>
+<a name="arguments-6" class="anchor" href="#arguments-6"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>event</td>
-            <td>The name of the event that will be piped.</td>
-            <td>string</td>
-        </tr>
-<tr>
-<td>emitter</td>
-            <td>The emitter that events will be piped from.</td>
-            <td>object</td>
-        </tr>
-</table><pre><code>emitter.pipe(array events, object emitter[, ...]) =&gt; object pipe
-</code></pre>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody></tbody>
+</table><h3>
+<a name="eventemitterunpipeevent-eventemitter" class="anchor" href="#eventemitterunpipeevent-eventemitter"><span class="octicon octicon-link"></span></a>eventEmitter.unpipe([event], eventEmitter)</h3>
+
+<h4>
+<a name="arguments-7" class="anchor" href="#arguments-7"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>events</td>
-            <td>An array of event names that will be piped.</td>
-            <td>array</td>
-        </tr>
-<tr>
-<td>emitter</td>
-            <td>The emitter that events will be piped from.</td>
-            <td>object</td>
-        </tr>
-</table><h3>emitter.pipe.clear()</h3>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody></tbody>
+</table><h3>
+<a name="eventemitterlistenersevent" class="anchor" href="#eventemitterlistenersevent"><span class="octicon octicon-link"></span></a>eventEmitter.listeners([event])</h3>
 
-<pre><code>emitter.pipe.clear([string event])
-</code></pre>
-
-<p>Allows clearing all pipes, or pipes that transport select events. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.</p>
-
-<h4>Arguments</h4>
+<h4>
+<a name="arguments-8" class="anchor" href="#arguments-8"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>event</td>
-            <td>Optional. If any pipes are transporting this event they will be cleared.</td>
-            <td>string</td>
-        </tr>
-</table><h3>emitter.listeners()</h3>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody></tbody>
+</table><h3>
+<a name="eventemitterunbindallevent" class="anchor" href="#eventemitterunbindallevent"><span class="octicon octicon-link"></span></a>eventEmitter.unbindAll([event])</h3>
 
-<pre><code>emitter.listeners([string event]) =&gt; object eventlisteners
-</code></pre>
+<h4>
+<a name="aliases-4" class="anchor" href="#aliases-4"><span class="octicon octicon-link"></span></a>Aliases</h4>
 
-<p>Allows access to the emitter's bound event listeners.</p>
-
-<p>If an event name is given, the array of listeners bound to the named event will be returned. If no event name is given then the events will be returned. The events object contains all event arrays.</p>
-
-<p>Directly editing the listeners array is not recommended, however it may be necessary to achieve certain types of functionally in specific cases.</p>
-
-<h4>Arguments</h4>
+<ul>
+<li>eventEmitter.removeAllListeners</li>
+</ul><h4>
+<a name="arguments-9" class="anchor" href="#arguments-9"><span class="octicon octicon-link"></span></a>Arguments</h4>
 
 <table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>event</td>
-            <td>Optional. The name of the event to expose. The listeners bound the the event will be returned.</td>
-            <td>string</td>
-        </tr>
-</table><h3>emitter.listeners.clear()</h3>
-
-<pre><code>emitter.listeners.clear([string event])
-</code></pre>
-
-<p>Clears listeners bound to the emitter. If an event name is given, only listeners bound to that event will be cleared. If no event name is given all bound listeners will be cleared.</p>
-
-<h4>Arguments</h4>
-
-<table>
-<tr>
-<th>Name</th>
-            <th>Description</th>
-            <th>Allowed Types</th>
-        </tr>
-<tr>
-<td>event</td>
-            <td>Optional. The name of the event to clear listeners from.</td>
-            <td>string</td>
-        </tr>
-</table><h2>A Foot Note</h2>
+<thead><tr>
+<th>Argument Name</th>
+<th>Allowed Types</th>
+<th>Description</th>
+</tr></thead>
+<tbody></tbody>
+</table><h2>
+<a name="a-foot-note" class="anchor" href="#a-foot-note"><span class="octicon octicon-link"></span></a>A Foot Note</h2>
 
 <p>If you like my library feel free to use it however you want. If you wish to contribute to LucidJS please feel free to send me a pull request or make your own fork. Commentary is welcome on any of my projects.</p>
 
 <p>Cheers and happy coding.</p>
       </section>
-
       <footer>
-        <span class="ribbon-outer">
-          <span class="ribbon-inner">
-            <p>this project by <a href="https://github.com/RobertWHurst">RobertWHurst</a> can be found on <a href="https://github.com/RobertWHurst/LucidJS">GitHub</a></p>
-          </span>
-          <span class="left-tail"></span>
-          <span class="right-tail"></span>
-        </span>
-        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
-        <span class="octocat"></span>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
       </footer>
-
     </div>
-
-              <script type="text/javascript">
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
