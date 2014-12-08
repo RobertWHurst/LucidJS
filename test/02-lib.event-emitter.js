@@ -375,6 +375,20 @@ test('eventEmitter.flag() - Prebound Listeners', function(t) {
   });
 });
 
+test('eventEmitter.flag() - Multiple Flags with Mixed Binding', function(t) {
+  var event1Fired = false;
+  eventEmitter.bind('event1:prebound', function() {
+    event1Fired = true;
+  });
+  
+  eventEmitter.flag([ 'event1:prebound', 'event2:postbound' ]);
+
+  eventEmitter.bind('event2:postbound', function() {
+    t.ok(event1Fired, 'event1:prebound fired');
+    t.end();
+  });
+});
+
 test('eventEmitter.flag() - Meta Event', function(t) {
   eventEmitter._listeners = {};
   eventEmitter._listeners['emitter.flag'] = [ function() {
